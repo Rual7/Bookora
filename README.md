@@ -16,8 +16,6 @@ An online bookstore for **printed books** and **e-books**, built as a single-pag
 8. [Quality and delivery](#quality-and-delivery)
 9. [Project structure](#project-structure)
 10. [Running locally](#running-locally)
-11. [Evaluation criteria coverage](#evaluation-criteria-coverage)
-12. [Roadmap](#roadmap)
 
 ## About
 
