@@ -2,7 +2,7 @@
 
 An online bookstore for **printed books** and **e-books**, built as a single-page application: a **Java Spring Boot** REST backend, a **PostgreSQL** database and a **React** frontend.
 
-> **Status:** in development. The architecture and database are designed; the application is being implemented (see the [roadmap](#roadmap)).
+> **Status:** in development. The architecture and database are designed; the application is being implemented.
 
 ## Contents
 
