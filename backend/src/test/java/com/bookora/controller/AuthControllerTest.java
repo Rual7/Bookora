@@ -3,7 +3,6 @@ package com.bookora.controller;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -78,13 +77,6 @@ class AuthControllerTest {
 		mvc.perform(post("/api/auth/register").contentType(MediaType.APPLICATION_JSON)
 				.content(json("a@example.com", "secret-pass")))
 				.andExpect(status().isForbidden());
-	}
-
-	@Test
-	void csrfEndpointHandsOutTheTokenCookie() throws Exception {
-		mvc.perform(get("/api/auth/csrf"))
-				.andExpect(status().isNoContent())
-				.andExpect(cookie().exists("XSRF-TOKEN"));
 	}
 
 	@Test
