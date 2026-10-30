@@ -1,0 +1,98 @@
+/* One photo for both themes; in the dark theme --hero-tint darkens it. Its left side is empty wall, where the text sits. */
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 480px;
+  background-color: var(--bg-alt);
+  background-image: linear-gradient(var(--hero-tint), var(--hero-tint)), url("/images/HeroIMG.jpg");
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  background-size: cover;
+}
+
+/* Phone: the text is on top and the books show below it */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--hero-fade) 94%, transparent) 35%,
+    color-mix(in srgb, var(--hero-fade) 15%, transparent) 75%
+  );
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  padding-block: 40px 160px;
+  align-self: flex-start;
+}
+
+.hero-copy {
+  max-width: 520px;
+}
+
+.hero-eyebrow {
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: var(--ink-muted);
+}
+
+.hero-lead {
+  margin: 20px 0 32px;
+  max-width: 44ch;
+  font-size: 18px;
+  color: var(--ink-muted);
+}
+
+@media (min-width: 640px) {
+  .hero {
+    min-height: 460px;
+  }
+
+  .hero::after {
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--hero-fade) 80%, transparent) 20%,
+      transparent 60%
+    );
+  }
+
+  .hero-inner {
+    align-self: center;
+    padding-block: 56px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero {
+    min-height: 520px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-copy > * {
+    animation: rise 0.5s ease both;
+  }
+
+  .hero-copy > :nth-child(2) {
+    animation-delay: 0.08s;
+  }
+
+  .hero-copy > :nth-child(3) {
+    animation-delay: 0.16s;
+  }
+
+  .hero-copy > :nth-child(4) {
+    animation-delay: 0.24s;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}

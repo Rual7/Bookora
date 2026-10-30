@@ -1,0 +1,148 @@
+.carousel {
+  --per-view: 2;
+  --gap: 20px;
+  position: relative;
+}
+
+.carousel-track {
+  display: flex;
+  gap: var(--gap);
+  margin: 0;
+  padding: 8px 0 16px;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-slide {
+  flex: 0 0 calc((100% - var(--gap) * (var(--per-view) - 0.4)) / var(--per-view));
+  scroll-snap-align: start;
+  position: relative;
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 38%;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-card);
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.carousel-btn:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+
+.carousel-btn:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.carousel-prev {
+  left: -12px;
+}
+
+.carousel-next {
+  right: -12px;
+}
+
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.carousel-dot {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--border);
+}
+
+/* 44px touch target around the small dot */
+.carousel-dot::after {
+  content: "";
+  position: absolute;
+  inset: -17px;
+}
+
+.carousel-dot.is-active {
+  background: var(--accent);
+}
+
+.skeleton-cover {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  margin-bottom: 12px;
+}
+
+.skeleton-line {
+  height: 14px;
+  margin-bottom: 8px;
+}
+
+.skeleton-short {
+  width: 60%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .carousel-track {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (min-width: 640px) {
+  .carousel {
+    --per-view: 3;
+  }
+}
+
+@media (min-width: 1024px) {
+  .carousel {
+    --per-view: 5;
+  }
+
+  .carousel-dots {
+    display: none;
+  }
+}
+
+.book-card-skeleton {
+  width: 100%;
+}
+
+.skeleton {
+  display: block;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--border) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .skeleton {
+    animation: shimmer 1.4s linear infinite;
+  }
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+

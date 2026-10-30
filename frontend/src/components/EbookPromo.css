@@ -1,0 +1,99 @@
+.ebook-promo {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  min-height: 280px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--banner-bg);
+  color: #f3eee4;
+}
+
+/* The photo fills the whole section. Its left side is dark, and the gradient below keeps the text readable. */
+.ebook-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 80% center;
+}
+
+.ebook-promo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--banner-bg) 92%, transparent) 0%,
+    color-mix(in srgb, var(--banner-bg) 70%, transparent) 60%,
+    color-mix(in srgb, var(--banner-bg) 30%, transparent) 100%
+  );
+}
+
+.ebook-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 420px;
+  padding: 32px 24px;
+}
+
+.ebook-eyebrow {
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #d4a663;
+}
+
+.ebook-promo h2 {
+  color: #f3eee4;
+}
+
+.ebook-text {
+  margin: 8px 0 24px;
+  color: #d8d2c4;
+}
+
+.ebook-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 24px;
+  border-radius: var(--radius-pill);
+  background: #f3eee4;
+  color: #0e1523;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ebook-btn:hover {
+  background: #fff;
+}
+
+.ebook-btn:focus-visible {
+  outline-color: #f3eee4;
+}
+
+@media (min-width: 768px) {
+  .ebook-promo {
+    min-height: 260px;
+  }
+
+  .ebook-promo::after {
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--banner-bg) 90%, transparent) 0%,
+      color-mix(in srgb, var(--banner-bg) 40%, transparent) 45%,
+      transparent 65%
+    );
+  }
+
+  .ebook-image {
+    object-position: right center;
+  }
+
+  .ebook-copy {
+    padding: 40px 48px;
+  }
+}
