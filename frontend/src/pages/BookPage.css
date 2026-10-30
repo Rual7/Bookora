@@ -1,0 +1,167 @@
+.book-detail {
+  display: grid;
+  gap: 32px;
+}
+
+.book-detail-cover {
+  max-width: 280px;
+}
+
+.book-detail h1 {
+  margin-bottom: 4px;
+}
+
+.book-detail-author {
+  color: var(--ink-muted);
+  font-size: 18px;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 24px;
+  font-size: 14px;
+}
+
+.stars {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.star-on {
+  fill: var(--accent);
+  color: var(--accent);
+}
+
+.star-off {
+  color: var(--border);
+}
+
+.format-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 20px;
+  padding: 0;
+  border: 0;
+}
+
+.format-picker legend {
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.format-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 0 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.format-option strong {
+  margin-left: auto;
+  font-family: var(--font-serif);
+}
+
+.format-option.is-selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.format-option:has(input:focus-visible) {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.format-option input {
+  accent-color: var(--accent-hover);
+}
+
+.buy-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.buy-row .btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.wish-btn-inline {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+}
+
+.wish-btn-inline.is-active {
+  color: var(--danger-ink);
+}
+
+.wish-btn-inline.is-active svg {
+  fill: currentColor;
+}
+
+.book-detail .form-error {
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.book-detail-description {
+  margin: 28px 0;
+  max-width: 62ch;
+}
+
+.book-facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 24px;
+  margin: 0 0 40px;
+  font-size: 14px;
+}
+
+.book-facts dt {
+  color: var(--ink-muted);
+}
+
+.book-facts dd {
+  margin: 0;
+}
+
+.reviews h2 {
+  margin-bottom: 16px;
+}
+
+.review {
+  padding: 16px 0;
+  border-top: 1px solid var(--border);
+}
+
+.review h3 {
+  margin: 8px 0 4px;
+  font-family: var(--font-sans);
+  font-size: 16px;
+}
+
+.review-author {
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+@media (min-width: 1024px) {
+  .book-detail {
+    grid-template-columns: 300px 1fr;
+    gap: 56px;
+  }
+}
