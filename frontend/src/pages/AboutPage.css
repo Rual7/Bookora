@@ -1,0 +1,94 @@
+.about-hero {
+  background: var(--bg-alt);
+}
+
+.about-hero-inner {
+  display: grid;
+  gap: 40px;
+  align-items: center;
+  padding-block: 56px;
+}
+
+.about-lead {
+  margin-top: 20px;
+  max-width: 52ch;
+  font-size: 18px;
+  color: var(--ink-muted);
+}
+
+/* The logo with the name under it, like the one in the header but stacked */
+.about-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.about-mark {
+  width: clamp(120px, 40%, 200px);
+  height: auto;
+}
+
+.about-wordmark {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: clamp(2.75rem, 7vw, 4rem);
+  line-height: 1;
+}
+
+.about-body {
+  display: grid;
+  gap: 48px;
+  padding-block: 56px 0;
+}
+
+.about-body h2 {
+  margin-bottom: 12px;
+}
+
+.about-body p {
+  max-width: 60ch;
+  margin-bottom: 12px;
+}
+
+/* One column (below 900px): the contact block sits in the middle of the page */
+.contact-section {
+  text-align: center;
+}
+
+.contact-section p {
+  margin-inline: auto;
+}
+
+.contact-form {
+  max-width: 520px;
+  margin: 20px auto 0;
+  text-align: left;
+}
+
+.link-reset {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+@media (min-width: 900px) {
+  .about-hero-inner {
+    grid-template-columns: 1.2fr 1fr;
+    gap: 64px;
+  }
+
+  .about-body {
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+  }
+
+  .contact-section {
+    text-align: left;
+  }
+
+  .contact-section p,
+  .contact-form {
+    margin-inline: 0;
+  }
+}

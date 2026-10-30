@@ -1,0 +1,24 @@
+/* The card sits in the middle of the space between the header and the footer */
+.auth-page {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding-block: 48px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+}
+
+.auth-card h1 {
+  margin-bottom: 24px;
+  text-align: center;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+}
+
+.auth-switch {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 14px;
+}
