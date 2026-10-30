@@ -12,11 +12,6 @@ import com.bookora.exception.NotImplementedYetException;
 @RestController
 public class PlannedFeaturesController {
 
-	@GetMapping("/api/orders")
-	public Object orders() {
-		throw new NotImplementedYetException("Orders");
-	}
-
 	@GetMapping("/api/admin/books")
 	public Object adminBooks() {
 		throw new NotImplementedYetException("Book administration");

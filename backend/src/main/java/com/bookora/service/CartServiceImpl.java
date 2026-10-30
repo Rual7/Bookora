@@ -151,7 +151,9 @@ public class CartServiceImpl implements CartService {
 		List<CartItemDto> items = lines.stream().map(this::toItemDto).toList();
 		int itemCount = items.stream().mapToInt(CartItemDto::quantity).sum();
 		BigDecimal subtotal = items.stream().map(CartItemDto::lineTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
-		return new CartDto(items, itemCount, subtotal, BookMapper.CURRENCY);
+		boolean hasPrintedItems = items.stream().anyMatch(item -> !item.format().isDigital());
+		BigDecimal shippingCost = Shipping.cost(subtotal, hasPrintedItems);
+		return new CartDto(items, itemCount, subtotal, shippingCost, subtotal.add(shippingCost), BookMapper.CURRENCY);
 	}
 
 	private CartItemDto toItemDto(Line line) {

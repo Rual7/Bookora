@@ -22,7 +22,7 @@ import com.bookora.repository.RatingSummary;
 @Component
 public class BookMapper {
 
-	static final String CURRENCY = "RON";
+	static final String CURRENCY = "EUR";
 
 	public BookSummaryDto toSummary(Book book) {
 		return toSummary(book, List.of(ProductFormat.values()));

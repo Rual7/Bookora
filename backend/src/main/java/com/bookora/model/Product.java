@@ -68,4 +68,8 @@ public class Product extends BaseEntity {
 		return active;
 	}
 
+	public void reduceStock(int quantity) {
+		stockQuantity -= quantity;
+	}
+
 }
