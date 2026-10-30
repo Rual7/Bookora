@@ -160,10 +160,14 @@ bookora/
 ```bash
 cp .env.example .env          # fill in the local values
 docker compose up -d db       # PostgreSQL
-cd backend && ./mvnw spring-boot:run     # Flyway migrations run on startup
-cd frontend && npm install && npm run dev
+cd backend && ./mvnw spring-boot:run     # Flyway migrations run on startup (API on :8080)
+cd frontend && npm install && npm run dev  # app on :5173, /api is proxied to :8080
 ```
 
-> These steps are the plan and will be confirmed once the project is set up.
+Notes:
+
+- PostgreSQL is published on host port **5433** (`DB_PORT`) so it does not clash with a local PostgreSQL on 5432. `DB_URL` in `.env` must use the same port.
+- Maven needs `JAVA_HOME` to point at JDK 25.
+- The full stack (Apache + backend + database) can be built with `docker compose --profile full up -d --build`; the site is then on http://localhost:8081.
 
 Configuration is read from environment variables: database connection, Stripe keys, Turnstile secret, e-book storage path and public base URL.
