@@ -1,0 +1,34 @@
+.address-form-row {
+  display: grid;
+  gap: 16px;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+.address-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.address-form .btn {
+  margin-top: 0;
+}
+
+@media (min-width: 640px) {
+  .address-form-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}

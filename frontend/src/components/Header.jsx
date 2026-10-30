@@ -1,21 +1,22 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { Heart, LogOut, Menu, Search, ShoppingCart, User, X } from 'lucide-react'
+import { Heart, Menu, Search, ShoppingCart, User, X } from 'lucide-react'
 import Logo from './Logo.jsx'
 import SearchBox from './SearchBox.jsx'
 import ThemeToggle from './ThemeToggle.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useCart } from '../context/CartContext.jsx'
+import { t } from '../i18n/t.js'
 import { usePanel } from '../context/PanelContext.jsx'
 import { useWishlist } from '../context/WishlistContext.jsx'
 import './Header.css'
 
 const NAV = [
-  { to: '/', label: 'Home', end: true },
-  { to: '/books', label: 'Books', end: true },
-  { to: '/books?format=ebook', label: 'E-books', end: false },
-  { to: '/categories', label: 'Categories', end: false },
-  { to: '/about', label: 'About', end: false },
+  { to: '/', label: 'nav.home', end: true },
+  { to: '/books', label: 'nav.books', end: true },
+  { to: '/books?format=ebook', label: 'nav.ebooks', end: false },
+  { to: '/categories', label: 'nav.categories', end: false },
+  { to: '/about', label: 'nav.about', end: false },
 ]
 
 export default function Header() {
@@ -45,26 +46,31 @@ export default function Header() {
       <div className="container header-inner">
         <Logo />
 
-        <nav id="primary-nav" className={`primary-nav${menuOpen ? ' is-open' : ''}`} aria-label="Primary">
+        <nav id="primary-nav" className={`primary-nav${menuOpen ? ' is-open' : ''}`} aria-label={t('nav.primary')}>
           {NAV.map((item) => (
             <NavLink
               key={item.label}
               to={item.to}
               end={item.end}
-              className={({ isActive }) => `nav-link${isActive && item.label !== 'E-books' ? ' is-active' : ''}`}
+              className={({ isActive }) => `nav-link${isActive && item.label !== 'nav.ebooks' ? ' is-active' : ''}`}
               onClick={() => setOpen(null)}
             >
-              {item.label}
+              {t(item.label)}
             </NavLink>
           ))}
           {/* On a phone the account buttons move into this menu to leave room in the header. */}
           {user ? (
-            <button type="button" className="nav-link nav-account" onClick={() => { setOpen(null); logout() }}>
-              Sign out
-            </button>
+            <>
+              <NavLink to="/orders" className="nav-link nav-account" onClick={() => setOpen(null)}>
+                {t('nav.account')}
+              </NavLink>
+              <button type="button" className="nav-link nav-account" onClick={() => { setOpen(null); logout() }}>
+                {t('nav.signOut')}
+              </button>
+            </>
           ) : (
             <NavLink to="/login" className="nav-link nav-account" onClick={() => setOpen(null)}>
-              Sign in
+              {t('nav.signIn')}
             </NavLink>
           )}
         </nav>
@@ -72,28 +78,28 @@ export default function Header() {
         <SearchBox active={searchOpen} onActivate={activateSearch} onDeactivate={deactivateSearch} />
 
         <div className="header-actions">
-          <button type="button" className="icon-btn search-toggle" data-search-toggle aria-label="Search"
+          <button type="button" className="icon-btn search-toggle" data-search-toggle aria-label={t('nav.search')}
             aria-expanded={searchOpen} onClick={() => toggle('search')}>
             <Search size={22} strokeWidth={1.5} aria-hidden="true" />
           </button>
           <ThemeToggle className="icon-btn" />
           <button type="button" className="icon-btn badge-host" aria-haspopup="dialog"
-            aria-label={`Wishlist, ${wishedBooks.length} books`} onClick={() => openPanel('wishlist')}>
+            aria-label={t('nav.wishlist', { count: wishedBooks.length })} onClick={() => openPanel('wishlist')}>
             <Heart size={22} strokeWidth={1.5} aria-hidden="true" />
             {wishedBooks.length > 0 && <span className="badge" aria-hidden="true">{wishedBooks.length}</span>}
           </button>
           <button type="button" className="icon-btn badge-host" aria-haspopup="dialog"
-            aria-label={`Cart, ${itemCount} items`} onClick={() => openPanel('cart')}>
+            aria-label={t('nav.cart', { count: itemCount })} onClick={() => openPanel('cart')}>
             <ShoppingCart size={22} strokeWidth={1.5} aria-hidden="true" />
             {itemCount > 0 && <span className="badge" aria-hidden="true">{itemCount}</span>}
           </button>
           <div className="account-actions">
             {user ? (
-              <button type="button" className="icon-btn" aria-label="Sign out" onClick={logout}>
-                <LogOut size={22} strokeWidth={1.5} aria-hidden="true" />
-              </button>
+              <Link to="/orders" className="icon-btn" aria-label={t('nav.account')}>
+                <User size={22} strokeWidth={1.5} aria-hidden="true" />
+              </Link>
             ) : (
-              <Link to="/login" className="icon-btn" aria-label="Sign in">
+              <Link to="/login" className="icon-btn" aria-label={t('nav.signIn')}>
                 <User size={22} strokeWidth={1.5} aria-hidden="true" />
               </Link>
             )}
@@ -101,7 +107,7 @@ export default function Header() {
           <button
             type="button"
             className="icon-btn menu-toggle"
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-label={menuOpen ? t('nav.closeMenu') : t('nav.openMenu')}
             aria-expanded={menuOpen}
             aria-controls="primary-nav"
             onClick={() => toggle('menu')}

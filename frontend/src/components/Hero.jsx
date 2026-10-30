@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
+import { t } from '../i18n/t.js'
 import './Hero.css'
 
 export default function Hero() {
@@ -7,17 +8,15 @@ export default function Hero() {
     <section className="hero" aria-labelledby="hero-title">
       <div className="container hero-inner">
         <div className="hero-copy">
-          <p className="hero-eyebrow">Books for every story of your life</p>
+          <p className="hero-eyebrow">{t('hero.eyebrow')}</p>
           <h1 id="hero-title">
-            Discover new worlds,
+            {t('hero.title1')}
             <br />
-            on every page
+            {t('hero.title2')}
           </h1>
-          <p className="hero-lead">
-            Printed books and e-books from every genre, for the readers of today and tomorrow.
-          </p>
+          <p className="hero-lead">{t('hero.lead')}</p>
           <Link to="/books" className="btn btn-block">
-            Explore the catalog
+            {t('hero.cta')}
             <ArrowRight className="btn-arrow" size={18} strokeWidth={2} aria-hidden="true" />
           </Link>
         </div>

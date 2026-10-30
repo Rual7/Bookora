@@ -1,21 +1,22 @@
 import { useSearchParams } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import BookCard from '../components/BookCard.jsx'
+import { t } from '../i18n/t.js'
 import { useFetch } from '../hooks/useFetch.js'
 import './BooksPage.css'
 
 const FORMATS = [
-  { value: '', label: 'All formats' },
-  { value: 'printed', label: 'Printed' },
-  { value: 'ebook', label: 'E-books' },
+  { value: '', label: 'filter.allFormats' },
+  { value: 'printed', label: 'filter.printed' },
+  { value: 'ebook', label: 'nav.ebooks' },
 ]
 
 const SORTS = [
-  { value: 'title', label: 'Title A-Z' },
-  { value: 'newest', label: 'Newest first' },
-  { value: 'price-asc', label: 'Price: low to high' },
-  { value: 'price-desc', label: 'Price: high to low' },
-  { value: 'rating', label: 'Top rated' },
+  { value: 'title', label: 'sort.title' },
+  { value: 'newest', label: 'sort.newest' },
+  { value: 'price-asc', label: 'sort.priceAsc' },
+  { value: 'price-desc', label: 'sort.priceDesc' },
+  { value: 'rating', label: 'sort.rating' },
 ]
 
 export default function BooksPage() {
@@ -48,36 +49,34 @@ export default function BooksPage() {
 
   return (
     <div className="container page">
-      <h1>{query ? `Results for "${query}"` : 'Books'}</h1>
+      <h1>{query ? t('books.resultsFor', { query }) : t('nav.books')}</h1>
 
       <div className="filters">
-        <Select label="Category" value={category} onChange={(value) => setFilter('category', value)}>
-          <option value="">All categories</option>
+        <Select label={t('filter.category')} value={category} onChange={(value) => setFilter('category', value)}>
+          <option value="">{t('filter.allCategories')}</option>
           {categories?.map((item) => (
-            <option key={item.id} value={item.slug}>{item.name}</option>
+            <option key={item.id} value={item.slug}>{t(`category.${item.slug}`, {}, item.name)}</option>
           ))}
         </Select>
-        <Select label="Format" value={format} onChange={(value) => setFilter('format', value)}>
+        <Select label={t('filter.format')} value={format} onChange={(value) => setFilter('format', value)}>
           {FORMATS.map((item) => (
-            <option key={item.value} value={item.value}>{item.label}</option>
+            <option key={item.value} value={item.value}>{t(item.label)}</option>
           ))}
         </Select>
-        <Select label="Sort by" value={sort} onChange={(value) => setFilter('sort', value === 'title' ? '' : value)}>
+        <Select label={t('filter.sortBy')} value={sort} onChange={(value) => setFilter('sort', value === 'title' ? '' : value)}>
           {SORTS.map((item) => (
-            <option key={item.value} value={item.value}>{item.label}</option>
+            <option key={item.value} value={item.value}>{t(item.label)}</option>
           ))}
         </Select>
       </div>
 
-      {loading && <p className="muted">Loading...</p>}
-      {error && <p className="muted">The catalog could not be loaded. Please try again later.</p>}
+      {loading && <p className="muted">{t('common.loading')}</p>}
+      {error && <p className="muted">{t('books.error')}</p>}
 
       {data && (
         <>
           <p className="muted results-count" aria-live="polite">
-            {data.totalElements === 0
-              ? 'No books match your filters.'
-              : `${data.totalElements} ${data.totalElements === 1 ? 'book' : 'books'}`}
+            {data.totalElements === 0 ? t('books.none') : t('books.count', { count: data.totalElements })}
           </p>
           <ul className="books-grid">
             {data.content.map((book) => (
@@ -87,14 +86,14 @@ export default function BooksPage() {
             ))}
           </ul>
           {data.totalPages > 1 && (
-            <nav className="pagination" aria-label="Pages">
+            <nav className="pagination" aria-label={t('pagination.label')}>
               <button type="button" className="page-btn" disabled={page === 0}
-                onClick={() => goToPage(page - 1)} aria-label="Previous page">
+                onClick={() => goToPage(page - 1)} aria-label={t('pagination.prev')}>
                 <ChevronLeft size={18} aria-hidden="true" />
               </button>
-              <span>Page {page + 1} of {data.totalPages}</span>
+              <span>{t('pagination.status', { page: page + 1, total: data.totalPages })}</span>
               <button type="button" className="page-btn" disabled={page + 1 >= data.totalPages}
-                onClick={() => goToPage(page + 1)} aria-label="Next page">
+                onClick={() => goToPage(page + 1)} aria-label={t('pagination.next')}>
                 <ChevronRight size={18} aria-hidden="true" />
               </button>
             </nav>

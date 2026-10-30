@@ -1,18 +1,19 @@
 import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { BookOpen, ChevronLeft, ChevronRight, Feather, Fingerprint, Heart, Landmark, Rocket, Sparkles, Sprout } from 'lucide-react'
+import { t } from '../i18n/t.js'
 import { useScrollEdges } from '../hooks/useScrollEdges.js'
 import './CategoryStrip.css'
 
 const CATEGORIES = [
-  { slug: 'fiction', label: 'Fiction', Icon: BookOpen },
-  { slug: 'fantasy', label: 'Fantasy', Icon: Sparkles },
-  { slug: 'science-fiction', label: 'Science Fiction', Icon: Rocket },
-  { slug: 'romance', label: 'Romance', Icon: Heart },
-  { slug: 'philosophy', label: 'Philosophy', Icon: Landmark },
-  { slug: 'self-development', label: 'Self-development', Icon: Sprout },
-  { slug: 'mystery-thriller', label: 'Mystery & Thriller', Icon: Fingerprint },
-  { slug: 'classics', label: 'Classics', Icon: Feather },
+  { slug: 'fiction', Icon: BookOpen },
+  { slug: 'fantasy', Icon: Sparkles },
+  { slug: 'science-fiction', Icon: Rocket },
+  { slug: 'romance', Icon: Heart },
+  { slug: 'philosophy', Icon: Landmark },
+  { slug: 'self-development', Icon: Sprout },
+  { slug: 'mystery-thriller', Icon: Fingerprint },
+  { slug: 'classics', Icon: Feather },
 ]
 
 export default function CategoryStrip() {
@@ -21,29 +22,29 @@ export default function CategoryStrip() {
   const scrolls = !(atStart && atEnd)
 
   return (
-    <nav className="container category-strip" aria-label="Browse by category">
+    <nav className="container category-strip" aria-label={t('strip.label')}>
       {scrolls && (
-        <button type="button" className="strip-btn strip-prev" aria-label="Previous categories"
+        <button type="button" className="strip-btn strip-prev" aria-label={t('strip.prev')}
           disabled={atStart} onClick={() => scrollByPage(-1)}>
           <ChevronLeft size={20} aria-hidden="true" />
         </button>
       )}
 
       <ul className="category-list" ref={listRef} onScroll={update}>
-        {CATEGORIES.map(({ slug, label, Icon }) => (
+        {CATEGORIES.map(({ slug, Icon }) => (
           <li key={slug}>
             <Link to={`/books?category=${slug}`} className="category-item">
               <span className="category-circle">
                 <Icon size={28} strokeWidth={1.5} aria-hidden="true" />
               </span>
-              <span className="category-label">{label}</span>
+              <span className="category-label">{t(`category.${slug}`)}</span>
             </Link>
           </li>
         ))}
       </ul>
 
       {scrolls && (
-        <button type="button" className="strip-btn strip-next" aria-label="Next categories"
+        <button type="button" className="strip-btn strip-next" aria-label={t('strip.next')}
           disabled={atEnd} onClick={() => scrollByPage(1)}>
           <ChevronRight size={20} aria-hidden="true" />
         </button>

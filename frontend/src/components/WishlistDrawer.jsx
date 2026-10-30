@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { Heart } from 'lucide-react'
 import Drawer from './Drawer.jsx'
 import Cover from './Cover.jsx'
+import { t } from '../i18n/t.js'
 import { formatPrice } from '../utils/format.js'
 import { usePanel } from '../context/PanelContext.jsx'
 import { useWishlist } from '../context/WishlistContext.jsx'
@@ -11,9 +12,9 @@ export default function WishlistDrawer() {
   const { books, toggle } = useWishlist()
 
   return (
-    <Drawer open={panel === 'wishlist'} title="Your wishlist" onClose={closePanel}>
+    <Drawer open={panel === 'wishlist'} title={t('wishlist.title')} onClose={closePanel}>
       {books.length === 0 ? (
-        <p className="drawer-empty">Tap the heart on a book to save it here.</p>
+        <p className="drawer-empty">{t('wishlist.empty')}</p>
       ) : (
         <ul className="drawer-body">
           {books.map((book) => (
@@ -24,9 +25,9 @@ export default function WishlistDrawer() {
                   {book.title}
                 </Link>
                 <p>{book.authors.join(', ')}</p>
-                {book.price != null && <p className="drawer-row-price">{formatPrice(book.price, book.currency)}</p>}
+                {book.price != null && <p className="drawer-row-price">{formatPrice(book.price)}</p>}
               </div>
-              <button type="button" className="icon-btn" aria-label={`Remove ${book.title} from wishlist`}
+              <button type="button" className="icon-btn" aria-label={t('wish.remove', { title: book.title })}
                 onClick={() => toggle(book)}>
                 <Heart size={20} strokeWidth={1.5} className="heart-on" aria-hidden="true" />
               </button>

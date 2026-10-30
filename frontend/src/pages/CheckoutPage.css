@@ -1,0 +1,61 @@
+.checkout-heading {
+  margin-bottom: 16px;
+  font-size: 1.25rem;
+}
+
+.address-choices {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 0;
+  border: 0;
+}
+
+.address-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.address-choice:has(input:checked) {
+  border-color: var(--accent);
+}
+
+.address-choice input {
+  margin-top: 3px;
+  accent-color: var(--accent);
+}
+
+.checkout-form {
+  max-width: 560px;
+  margin-top: 16px;
+}
+
+.checkout-form h3 {
+  margin-bottom: 16px;
+  font-size: 1.05rem;
+}
+
+.checkout-lines {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+}
+
+.checkout-lines li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.cart-summary .btn:not(:disabled) {
+  margin-top: 16px;
+}

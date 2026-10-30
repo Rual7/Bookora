@@ -2,10 +2,15 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Trash2 } from 'lucide-react'
 import Cover from '../components/Cover.jsx'
-import { FORMAT_NAMES, formatPrice } from '../utils/format.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useCart } from '../context/CartContext.jsx'
+import { t } from '../i18n/t.js'
+import { formatPrice } from '../utils/format.js'
 import './CartPage.css'
+
+// Only for the note in the summary; the server decides the real delivery cost (see its Shipping class).
+const DELIVERY_COST = 2.5
+const FREE_DELIVERY_ABOVE = 40
 
 export default function CartPage() {
   const { user } = useAuth()
@@ -25,16 +30,16 @@ export default function CartPage() {
   if (cart.items.length === 0) {
     return (
       <div className="container page">
-        <h1>Your cart</h1>
-        <p className="muted">Your cart is empty.</p>
-        <p><Link to="/books" className="btn">Browse books</Link></p>
+        <h1>{t('cart.title')}</h1>
+        <p className="muted">{t('cart.empty')}</p>
+        <p><Link to="/books" className="btn">{t('common.browse')}</Link></p>
       </div>
     )
   }
 
   return (
     <div className="container page">
-      <h1>Your cart</h1>
+      <h1>{t('cart.title')}</h1>
       {error && <p className="form-error" role="alert">{error}</p>}
 
       <div className="cart-layout">
@@ -48,12 +53,12 @@ export default function CartPage() {
               <div className="cart-info">
                 <Link to={`/books/${item.bookSlug}`} className="cart-title">{item.title}</Link>
                 <p className="muted">{item.authors.join(', ')}</p>
-                <p className="muted">{FORMAT_NAMES[item.format]} &middot; {formatPrice(item.unitPrice)}</p>
+                <p className="muted">{t(`format.${item.format}`)} &middot; {formatPrice(item.unitPrice)}</p>
 
                 <div className="cart-actions">
                   {item.maxQuantity > 1 && (
                     <label className="qty">
-                      <span className="visually-hidden">Quantity of {item.title}</span>
+                      <span className="visually-hidden">{t('cart.quantityOf', { title: item.title })}</span>
                       <select value={item.quantity}
                         onChange={(event) => run(() => changeQuantity(item.productId, Number(event.target.value)))}>
                         {Array.from({ length: item.maxQuantity }, (_, i) => i + 1).map((n) => (
@@ -63,7 +68,7 @@ export default function CartPage() {
                     </label>
                   )}
                   <button type="button" className="link-btn" onClick={() => run(() => removeItem(item.productId))}>
-                    <Trash2 size={16} strokeWidth={1.5} aria-hidden="true" /> Remove
+                    <Trash2 size={16} strokeWidth={1.5} aria-hidden="true" /> {t('cart.remove')}
                   </button>
                 </div>
               </div>
@@ -73,22 +78,27 @@ export default function CartPage() {
           ))}
         </ul>
 
-        <aside className="cart-summary" aria-label="Order summary">
-          <h2>Summary</h2>
+        <aside className="cart-summary" aria-label={t('cart.summary')}>
+          <h2>{t('checkout.summary')}</h2>
           <p className="summary-row">
-            <span>Subtotal ({cart.itemCount} {cart.itemCount === 1 ? 'item' : 'items'})</span>
-            <strong>{formatPrice(cart.subtotal, cart.currency)}</strong>
+            <span>{t('cart.subtotalCount', { count: cart.itemCount })}</span>
+            <strong>{formatPrice(cart.subtotal)}</strong>
           </p>
-          <p className="muted summary-note">Delivery is calculated at checkout.</p>
+          <p className="summary-row">
+            <span>{t('cart.delivery')}</span>
+            <span>{Number(cart.shippingCost) === 0 ? t('shipping.free') : formatPrice(cart.shippingCost)}</span>
+          </p>
+          <p className="summary-row summary-total">
+            <span>{t('cart.total')}</span>
+            <strong>{formatPrice(cart.total)}</strong>
+          </p>
+          <p className="muted summary-note">{t('cart.deliveryNote', { cost: formatPrice(DELIVERY_COST), limit: formatPrice(FREE_DELIVERY_ABOVE) })}</p>
           {user ? (
-            <>
-              <button type="button" className="btn btn-block" disabled>Checkout</button>
-              <p className="muted summary-note">Online payment is coming soon.</p>
-            </>
+            <Link to="/checkout" className="btn btn-block">{t('cart.checkout')}</Link>
           ) : (
             <>
-              <Link to="/login" state={{ from: '/cart' }} className="btn btn-block">Sign in to check out</Link>
-              <p className="muted summary-note">Your cart is kept when you sign in.</p>
+              <Link to="/login" state={{ from: '/cart' }} className="btn btn-block">{t('cart.signInToCheckout')}</Link>
+              <p className="muted summary-note">{t('cart.keptNote')}</p>
             </>
           )}
         </aside>

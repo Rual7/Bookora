@@ -2,8 +2,9 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Trash2 } from 'lucide-react'
 import Drawer from './Drawer.jsx'
 import Cover from './Cover.jsx'
-import { formatPrice } from '../utils/format.js'
 import { useCart } from '../context/CartContext.jsx'
+import { t } from '../i18n/t.js'
+import { formatPrice } from '../utils/format.js'
 import { usePanel } from '../context/PanelContext.jsx'
 
 export default function CartDrawer() {
@@ -17,9 +18,9 @@ export default function CartDrawer() {
   }
 
   return (
-    <Drawer open={panel === 'cart'} title="Your cart" onClose={closePanel}>
+    <Drawer open={panel === 'cart'} title={t('cart.title')} onClose={closePanel}>
       {cart.items.length === 0 ? (
-        <p className="drawer-empty">Your cart is empty.</p>
+        <p className="drawer-empty">{t('cart.empty')}</p>
       ) : (
         <>
           <ul className="drawer-body">
@@ -30,11 +31,11 @@ export default function CartDrawer() {
                   <Link to={`/books/${item.bookSlug}`} className="drawer-row-title" onClick={closePanel}>
                     {item.title}
                   </Link>
-                  <p>{item.format.charAt(0) + item.format.slice(1).toLowerCase()}</p>
+                  <p>{t(`format.${item.format}`)}</p>
                   <div className="drawer-row-actions">
                     {item.maxQuantity > 1 && (
                       <label>
-                        <span className="visually-hidden">Quantity of {item.title}</span>
+                        <span className="visually-hidden">{t('cart.quantityOf', { title: item.title })}</span>
                         <select className="qty-select" value={item.quantity}
                           onChange={(event) => changeQuantity(item.productId, Number(event.target.value))}>
                           {Array.from({ length: item.maxQuantity }, (_, i) => i + 1).map((n) => (
@@ -44,7 +45,7 @@ export default function CartDrawer() {
                       </label>
                     )}
                     <button type="button" className="link-btn" onClick={() => removeItem(item.productId)}>
-                      <Trash2 size={16} strokeWidth={1.5} aria-hidden="true" /> Remove
+                      <Trash2 size={16} strokeWidth={1.5} aria-hidden="true" /> {t('cart.remove')}
                     </button>
                   </div>
                 </div>
@@ -54,10 +55,10 @@ export default function CartDrawer() {
           </ul>
           <div className="drawer-foot">
             <p className="drawer-total">
-              <span>Subtotal</span>
-              <span>{formatPrice(cart.subtotal, cart.currency)}</span>
+              <span>{t('cart.subtotal')}</span>
+              <span>{formatPrice(cart.subtotal)}</span>
             </p>
-            <button type="button" className="btn btn-block" onClick={goToCart}>Go to checkout</button>
+            <button type="button" className="btn btn-block" onClick={goToCart}>{t('cart.goToCheckout')}</button>
           </div>
         </>
       )}

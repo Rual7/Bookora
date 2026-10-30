@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { t } from '../i18n/t.js'
 import './StorageNotice.css'
 
 const KEY = 'bookora-cookie-notice'
@@ -27,12 +28,9 @@ export default function StorageNotice() {
   if (!visible) return null
 
   return (
-    <section className="storage-notice" aria-label="Storage notice">
-      <p>
-        Bookora uses only the cookies and browser storage it needs to work: your sign-in, your cart and your
-        theme choice. We do not use advertising or tracking cookies.
-      </p>
-      <button type="button" className="btn" onClick={dismiss}>Got it</button>
+    <section className="storage-notice" aria-label={t('storage.label')}>
+      <p>{t('storage.text')}</p>
+      <button type="button" className="btn" onClick={dismiss}>{t('storage.ok')}</button>
     </section>
   )
 }

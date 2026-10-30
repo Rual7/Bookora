@@ -1,11 +1,13 @@
-export const FORMAT_NAMES = {
-  PAPERBACK: 'Paperback',
-  HARDCOVER: 'Hardcover',
-  PDF: 'E-book (PDF)',
-  EPUB: 'E-book (EPUB)',
+export function isDigital(format) {
+  return format === 'PDF' || format === 'EPUB'
 }
 
-export function formatPrice(value, currency = 'RON') {
+export function formatDate(isoDate) {
+  return new Date(isoDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+// The shop sells in EUR. Old orders keep the currency they were placed in, so it can be passed in.
+export function formatPrice(value, currency = 'EUR') {
   return `${Number(value).toFixed(2)} ${currency}`
 }
 

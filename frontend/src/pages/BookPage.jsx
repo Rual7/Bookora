@@ -3,8 +3,9 @@ import { Link, useParams } from 'react-router-dom'
 import { Star } from 'lucide-react'
 import Cover from '../components/Cover.jsx'
 import WishlistButton from '../components/WishlistButton.jsx'
-import { FORMAT_NAMES, formatPrice } from '../utils/format.js'
 import { useCart } from '../context/CartContext.jsx'
+import { t } from '../i18n/t.js'
+import { formatPrice } from '../utils/format.js'
 import { usePanel } from '../context/PanelContext.jsx'
 import { useFetch } from '../hooks/useFetch.js'
 import './BookPage.css'
@@ -13,12 +14,12 @@ export default function BookPage() {
   const { slug } = useParams()
   const { data: book, loading, error } = useFetch(`/api/books/${encodeURIComponent(slug)}`)
 
-  if (loading) return <div className="container page muted">Loading...</div>
+  if (loading) return <div className="container page muted">{t('common.loading')}</div>
   if (error) {
     return (
       <div className="container page">
-        <h1>{error.status === 404 ? 'Book not found' : 'Something went wrong'}</h1>
-        <p className="muted"><Link to="/books" className="text-link">Back to all books</Link></p>
+        <h1>{error.status === 404 ? t('book.notFound') : t('common.wrong')}</h1>
+        <p className="muted"><Link to="/books" className="text-link">{t('book.backToAll')}</Link></p>
       </div>
     )
   }
@@ -62,7 +63,7 @@ function BookDetail({ book }) {
 
         {product ? (
           <fieldset className="format-picker">
-            <legend>Format</legend>
+            <legend>{t('filter.format')}</legend>
             {book.products.map((item) => (
               <label key={item.id} className={`format-option${item.id === productId ? ' is-selected' : ''}`}>
                 <input
@@ -72,19 +73,19 @@ function BookDetail({ book }) {
                   checked={item.id === productId}
                   onChange={() => setProductId(item.id)}
                 />
-                <span>{FORMAT_NAMES[item.format]}</span>
-                <strong>{formatPrice(item.price, item.currency)}</strong>
+                <span>{t(`format.${item.format}`)}</span>
+                <strong>{formatPrice(item.price)}</strong>
               </label>
             ))}
           </fieldset>
         ) : (
-          <p className="muted">This book is not available right now.</p>
+          <p className="muted">{t('book.unavailable')}</p>
         )}
 
         {product && (
           <div className="buy-row">
             <button type="button" className="btn" onClick={addToCart} disabled={busy || !product.inStock}>
-              {product.inStock ? 'Add to cart' : 'Out of stock'}
+              {product.inStock ? t('book.addToCart') : t('availability.OUT_OF_STOCK')}
             </button>
             <WishlistButton book={book} className="wish-btn-inline" />
           </div>
@@ -94,16 +95,18 @@ function BookDetail({ book }) {
         <p className="book-detail-description">{book.description}</p>
 
         <dl className="book-facts">
-          {book.publisher && <><dt>Publisher</dt><dd>{book.publisher}</dd></>}
-          {book.pageCount && <><dt>Pages</dt><dd>{book.pageCount}</dd></>}
+          {book.publisher && <><dt>{t('book.publisher')}</dt><dd>{book.publisher}</dd></>}
+          {book.pageCount && <><dt>{t('book.pages')}</dt><dd>{book.pageCount}</dd></>}
           {book.categories.length > 0 && (
             <>
-              <dt>Categories</dt>
+              <dt>{t('nav.categories')}</dt>
               <dd>
                 {book.categories.map((category, index) => (
                   <span key={category.id}>
                     {index > 0 && ', '}
-                    <Link to={`/books?category=${category.slug}`} className="text-link">{category.name}</Link>
+                    <Link to={`/books?category=${category.slug}`} className="text-link">
+                      {t(`category.${category.slug}`, {}, category.name)}
+                    </Link>
                   </span>
                 ))}
               </dd>
@@ -112,8 +115,8 @@ function BookDetail({ book }) {
         </dl>
 
         <section className="reviews" aria-labelledby="reviews-title">
-          <h2 id="reviews-title">Reviews</h2>
-          {book.reviews.length === 0 && <p className="muted">There are no reviews yet.</p>}
+          <h2 id="reviews-title">{t('book.reviews')}</h2>
+          {book.reviews.length === 0 && <p className="muted">{t('book.noReviews')}</p>}
           {book.reviews.map((review, index) => (
             <article key={index} className="review">
               <Stars value={review.rating} />
@@ -129,18 +132,18 @@ function BookDetail({ book }) {
 }
 
 function Rating({ average, count }) {
-  if (!count) return <p className="muted rating">No ratings yet</p>
+  if (!count) return <p className="muted rating">{t('book.noRatings')}</p>
   return (
     <p className="rating">
       <Stars value={Math.round(average)} />
-      <span className="muted">{Number(average).toFixed(1)} ({count} {count === 1 ? 'review' : 'reviews'})</span>
+      <span className="muted">{t('book.ratingSummary', { average: Number(average).toFixed(1), count })}</span>
     </p>
   )
 }
 
 function Stars({ value }) {
   return (
-    <span className="stars" role="img" aria-label={`${value} out of 5 stars`}>
+    <span className="stars" role="img" aria-label={t('book.stars', { value })}>
       {[1, 2, 3, 4, 5].map((n) => (
         <Star key={n} size={16} strokeWidth={1.5} className={n <= value ? 'star-on' : 'star-off'} aria-hidden="true" />
       ))}

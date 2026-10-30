@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import BookCard from './BookCard.jsx'
+import { t } from '../i18n/t.js'
 import { useFetch } from '../hooks/useFetch.js'
 import { useScrollEdges } from '../hooks/useScrollEdges.js'
 import './Carousel.css'
@@ -21,27 +22,27 @@ export default function FeaturedCarousel() {
   return (
     <section className="container section" aria-labelledby="featured-title">
       <div className="section-head">
-        <h2 id="featured-title">Our recommendations</h2>
+        <h2 id="featured-title">{t('featured.title')}</h2>
         <Link to="/books" className="text-link">
-          View all books
+          {t('featured.viewAll')}
           <ArrowRight size={16} strokeWidth={1.75} aria-hidden="true" />
         </Link>
       </div>
 
-      {error && <p className="muted">We could not load the recommendations right now. Please try again later.</p>}
+      {error && <p className="muted">{t('featured.error')}</p>}
 
       {!error && (
         <div
           className="carousel"
           role="region"
           aria-roledescription="carousel"
-          aria-label="Featured books"
+          aria-label={t('featured.region')}
           onKeyDown={onKeyDown}
         >
           <button
             type="button"
             className="carousel-btn carousel-prev"
-            aria-label="Previous books"
+            aria-label={t('featured.prev')}
             disabled={atStart}
             onClick={() => scrollByPage(-1)}
           >
@@ -65,7 +66,7 @@ export default function FeaturedCarousel() {
                     className="carousel-slide"
                     role="group"
                     aria-roledescription="slide"
-                    aria-label={`${index + 1} of ${books.length}`}
+                    aria-label={t('featured.slide', { index: index + 1, total: books.length })}
                   >
                     <BookCard book={book} />
                   </li>
@@ -75,7 +76,7 @@ export default function FeaturedCarousel() {
           <button
             type="button"
             className="carousel-btn carousel-next"
-            aria-label="Next books"
+            aria-label={t('featured.next')}
             disabled={atEnd}
             onClick={() => scrollByPage(1)}
           >
@@ -85,13 +86,13 @@ export default function FeaturedCarousel() {
       )}
 
       {!error && pageCount > 1 && (
-        <div className="carousel-dots" role="group" aria-label="Choose a page of books">
+        <div className="carousel-dots" role="group" aria-label={t('featured.pages')}>
           {Array.from({ length: pageCount }, (_, index) => (
             <button
               key={index}
               type="button"
               className={`carousel-dot${index === currentPage ? ' is-active' : ''}`}
-              aria-label={`Page ${index + 1}`}
+              aria-label={t('featured.page', { number: index + 1 })}
               aria-current={index === currentPage}
               onClick={() => scrollToPage(index)}
             />

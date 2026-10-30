@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
+import { t } from '../i18n/t.js'
 import './Drawer.css'
 
 /**
@@ -25,7 +26,7 @@ export default function Drawer({ open, title, onClose, children }) {
       <div className="drawer-panel">
         <div className="drawer-head">
           <h2>{title}</h2>
-          <button type="button" className="icon-btn" onClick={onClose} aria-label={`Close ${title.toLowerCase()}`}>
+          <button type="button" className="icon-btn" onClick={onClose} aria-label={t('drawer.close', { title: title.toLowerCase() })}>
             <X size={22} strokeWidth={1.5} aria-hidden="true" />
           </button>
         </div>

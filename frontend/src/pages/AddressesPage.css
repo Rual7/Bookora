@@ -1,0 +1,42 @@
+.address-title {
+  margin-bottom: 16px;
+  font-size: 1.25rem;
+}
+
+.address-list {
+  display: grid;
+  gap: 16px;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+}
+
+.address-card {
+  max-width: 560px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.address-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.address-default {
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--success-bg);
+  color: var(--success-ink);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.address-card-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+}

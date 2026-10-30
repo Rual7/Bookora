@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Search } from 'lucide-react'
 import Cover from './Cover.jsx'
+import { t } from '../i18n/t.js'
 import { formatPrice } from '../utils/format.js'
 import { useFetch } from '../hooks/useFetch.js'
 import './SearchBox.css'
@@ -66,8 +67,8 @@ export default function SearchBox({ active, onActivate, onDeactivate }) {
       <div className="search-bar">
         <form className="search-form" role="search" onSubmit={submit}>
           <Search size={18} strokeWidth={1.5} aria-hidden="true" />
-          <input ref={inputRef} type="search" value={text} placeholder="Search for a book..."
-            aria-label="Search for a book" autoComplete="off" onFocus={onActivate}
+          <input ref={inputRef} type="search" value={text} placeholder={t('search.placeholder')}
+            aria-label={t('search.label')} autoComplete="off" onFocus={onActivate}
             onChange={(event) => { setText(event.target.value); onActivate() }} />
         </form>
       </div>
@@ -75,10 +76,10 @@ export default function SearchBox({ active, onActivate, onDeactivate }) {
       {showPanel && (
         <div className="search-panel" aria-live="polite">
           <div className="container">
-            {(loading || !upToDate) && <p className="search-message">Searching...</p>}
-            {error && <p className="search-message">The search is not available right now.</p>}
+            {(loading || !upToDate) && <p className="search-message">{t('search.searching')}</p>}
+            {error && <p className="search-message">{t('search.unavailable')}</p>}
             {data && upToDate && data.content.length === 0 && (
-              <p className="search-message">No books found for &ldquo;{term}&rdquo;. Try another title or author.</p>
+              <p className="search-message">{t('search.none', { term })}</p>
             )}
             {data && upToDate && data.content.length > 0 && (
               <>
@@ -91,7 +92,7 @@ export default function SearchBox({ active, onActivate, onDeactivate }) {
                           <strong>{book.title}</strong>
                           <span className="muted">{book.authors.join(', ')}</span>
                         </span>
-                        {book.price != null && <span className="search-price">{formatPrice(book.price, book.currency)}</span>}
+                        {book.price != null && <span className="search-price">{formatPrice(book.price)}</span>}
                       </Link>
                     </li>
                   ))}
@@ -99,7 +100,7 @@ export default function SearchBox({ active, onActivate, onDeactivate }) {
                 {data.totalElements > MAX_RESULTS && (
                   <Link to={`/books?q=${encodeURIComponent(term)}`} className="text-link search-all"
                     onClick={onDeactivate}>
-                    See all {data.totalElements} results
+                    {t('search.seeAll', { count: data.totalElements })}
                   </Link>
                 )}
               </>

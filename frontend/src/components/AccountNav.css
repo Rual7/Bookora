@@ -1,0 +1,37 @@
+.account-nav {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.account-nav a {
+  padding: 12px 0;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  color: var(--ink-muted);
+  font-weight: 500;
+}
+
+.account-nav a:hover {
+  color: var(--ink);
+}
+
+.account-nav-signout {
+  margin-left: auto;
+  padding: 12px 0;
+  border: 0;
+  background: none;
+  color: var(--ink-muted);
+  font-weight: 500;
+}
+
+.account-nav-signout:hover {
+  color: var(--danger-ink);
+  text-decoration: underline;
+}
+
+.account-nav a.active {
+  border-bottom-color: var(--accent);
+  color: var(--ink);
+}

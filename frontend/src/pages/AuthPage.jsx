@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import FormField from '../components/FormField.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
+import { t } from '../i18n/t.js'
 import './AuthPage.css'
 
 const EMPTY_FORM = { firstName: '', lastName: '', email: '', password: '' }
@@ -50,34 +51,34 @@ export default function AuthPage({ mode }) {
   return (
     <div className="container auth-page">
       <section className="auth-card" aria-labelledby="auth-title">
-        <h1 id="auth-title">{isRegister ? 'Create your account' : 'Sign in'}</h1>
+        <h1 id="auth-title">{isRegister ? t('auth.registerTitle') : t('nav.signIn')}</h1>
 
         <form className="form" onSubmit={submit} noValidate>
           {isRegister && (
             <>
-              <FormField label="First name" name="firstName" value={form.firstName} onChange={update}
+              <FormField label={t('field.firstName')} name="firstName" value={form.firstName} onChange={update}
                 error={fieldErrors.firstName} autoComplete="given-name" required />
-              <FormField label="Last name" name="lastName" value={form.lastName} onChange={update}
+              <FormField label={t('field.lastName')} name="lastName" value={form.lastName} onChange={update}
                 error={fieldErrors.lastName} autoComplete="family-name" required />
             </>
           )}
-          <FormField label="Email" name="email" type="email" value={form.email} onChange={update}
+          <FormField label={t('field.email')} name="email" type="email" value={form.email} onChange={update}
             error={fieldErrors.email} autoComplete="email" required />
-          <FormField label="Password" name="password" type="password" value={form.password} onChange={update}
+          <FormField label={t('field.password')} name="password" type="password" value={form.password} onChange={update}
             error={fieldErrors.password} autoComplete={isRegister ? 'new-password' : 'current-password'}
-            hint={isRegister ? 'At least 8 characters' : undefined} required />
+            hint={isRegister ? t('auth.passwordHint') : undefined} required />
 
           {error && <p className="form-error" role="alert">{error}</p>}
 
           <button type="submit" className="btn" disabled={busy}>
-            {busy ? 'Please wait...' : isRegister ? 'Create account' : 'Sign in'}
+            {busy ? t('auth.wait') : isRegister ? t('auth.create') : t('nav.signIn')}
           </button>
         </form>
 
         <p className="auth-switch muted">
-          {isRegister ? 'Already have an account? ' : 'New to Bookora? '}
+          {isRegister ? t('auth.haveAccount') : t('auth.newHere')}{' '}
           <Link to={isRegister ? '/login' : '/register'} state={location.state} className="text-link">
-            {isRegister ? 'Sign in' : 'Create an account'}
+            {isRegister ? t('nav.signIn') : t('auth.createLink')}
           </Link>
         </p>
       </section>
