@@ -141,14 +141,20 @@
 }
 
 /* Once the full menu is visible, the field has a fixed width */
-@media (min-width: 900px) {
+@media (min-width: 1000px) {
   .search {
     flex: none;
-    width: 240px;
+    width: 180px;
   }
 }
 
 @media (min-width: 1100px) {
+  .search {
+    width: 240px;
+  }
+}
+
+@media (min-width: 1200px) {
   .search {
     width: 300px;
   }

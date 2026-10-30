@@ -26,6 +26,7 @@
 }
 
 .nav-link {
+  white-space: nowrap;
   padding-block: 6px;
   font-size: 15px;
   font-weight: 500;
@@ -187,7 +188,7 @@
   }
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1000px) {
   .primary-nav {
     display: flex;
     gap: 24px;
@@ -202,7 +203,7 @@
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1200px) {
   .primary-nav {
     gap: 32px;
   }
