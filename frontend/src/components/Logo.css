@@ -1,0 +1,45 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-mark {
+  flex: none;
+  width: 36px;
+  height: 36px;
+}
+
+.logo-pages {
+  fill: var(--logo-pages);
+}
+
+.logo-gold {
+  fill: var(--accent);
+}
+
+.logo-word {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1;
+  color: var(--ink);
+}
+
+@media (max-width: 519px) {
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+  }
+
+  .logo-word {
+    font-size: 22px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .logo-mark {
+    width: 40px;
+    height: 40px;
+  }
+}

@@ -1,0 +1,161 @@
+/* Phone: the field is hidden until the search icon is pressed, then it is a bar under the header. */
+.search {
+  display: contents;
+}
+
+.search-bar {
+  display: none;
+}
+
+.search.is-open .search-bar {
+  display: block;
+  position: absolute;
+  top: var(--header-h);
+  left: 0;
+  right: 0;
+  z-index: var(--z-menu);
+  padding: 4px var(--gutter) 12px;
+  background: var(--bg);
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding-inline: 16px;
+  background: var(--surface-2);
+  border-radius: var(--radius-pill);
+  color: var(--ink-muted);
+}
+
+.search-form input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font-size: 14px;
+  outline: none;
+}
+
+.search-form:focus-within {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.search-panel {
+  position: absolute;
+  top: var(--header-h);
+  left: 0;
+  right: 0;
+  z-index: var(--z-menu);
+  padding-block: 12px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 12px 24px rgb(0 0 0 / 0.12);
+}
+
+/* The results continue the bar that holds the field */
+.search.is-open .search-panel {
+  top: calc(var(--header-h) + 60px);
+}
+
+.search-message {
+  padding: 12px 0;
+  color: var(--ink-muted);
+}
+
+.search-results {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.search-result {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 8px;
+  border-radius: var(--radius-md);
+}
+
+.search-result:hover {
+  background: var(--surface-2);
+}
+
+.search-result strong {
+  display: block;
+  font-size: 15px;
+}
+
+.search-result .muted {
+  font-size: 13px;
+}
+
+.search-price {
+  font-family: var(--font-serif);
+  font-weight: 600;
+}
+
+.search-all {
+  margin: 8px 8px 4px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .search-panel {
+    animation: panel-down 0.2s ease both;
+  }
+}
+
+@keyframes panel-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+/* From 520px the field is always in the header and takes all the room up to the buttons on the right. */
+@media (min-width: 520px) {
+  .search {
+    display: block;
+    flex: 1;
+    min-width: 0;
+    margin-right: -8px;
+  }
+
+  .search .search-bar,
+  .search.is-open .search-bar {
+    display: block;
+    position: static;
+    padding: 0;
+    background: none;
+  }
+
+  .search-panel,
+  .search.is-open .search-panel {
+    top: var(--header-h);
+  }
+}
+
+/* Once the full menu is visible, the field has a fixed width */
+@media (min-width: 900px) {
+  .search {
+    flex: none;
+    width: 240px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .search {
+    width: 300px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .search {
+    width: 360px;
+  }
+}

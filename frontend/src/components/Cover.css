@@ -1,0 +1,63 @@
+.cover {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+  object-fit: cover;
+}
+
+.cover-generated {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 16% 12%;
+  text-align: center;
+  container-type: inline-size;
+}
+
+.cover-rule {
+  width: 28%;
+  height: 2px;
+  background: var(--cover-accent);
+}
+
+.cover-title {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 12cqw;
+  line-height: 1.15;
+  color: var(--cover-ink);
+}
+
+.cover-author {
+  font-size: 6.5cqw;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cover-accent);
+}
+
+.cover-v0 {
+  --cover-ink: #f3eee4;
+  --cover-accent: #d4a663;
+  background: #141e33;
+}
+
+.cover-v1 {
+  --cover-ink: #141e33;
+  --cover-accent: #7a5320;
+  background: #efe3cc;
+}
+
+.cover-v2 {
+  --cover-ink: #141e33;
+  --cover-accent: #141e33;
+  background: #c09253;
+}
+
+.cover-v3 {
+  --cover-ink: #f3eee4;
+  --cover-accent: #e0b677;
+  background: #5a2530;
+}

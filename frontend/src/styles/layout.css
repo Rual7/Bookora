@@ -1,0 +1,106 @@
+.container {
+  width: 100%;
+  max-width: calc(var(--container) + var(--gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.section {
+  margin-top: var(--section-gap);
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent-text);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.text-link:hover {
+  text-decoration: underline;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 28px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.btn:hover {
+  background: var(--accent-hover);
+}
+
+.btn .btn-arrow {
+  transition: transform 0.2s ease;
+}
+
+.btn:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+.page {
+  padding-block: 48px;
+}
+
+.page h1 {
+  margin-bottom: 24px;
+}
+
+.muted {
+  color: var(--ink-muted);
+}
+
+/* The page is a column (see #root in base.css): the main area grows so the footer is never mid-screen */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: var(--section-gap);
+}
+
+/* On sign-in and register the form is centred in the free space, so no extra space is kept below it */
+.main-content:has(.auth-page) {
+  padding-bottom: 0;
+}
+
+@media (max-width: 639px) {
+  .btn-block {
+    width: 100%;
+  }
+}
+
+.link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 14px;
+  color: var(--ink-muted);
+}
+
+.link-btn:hover {
+  color: var(--danger-ink);
+  text-decoration: underline;
+}
+

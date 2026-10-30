@@ -1,0 +1,140 @@
+.drawer {
+  width: min(420px, 100vw);
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0 0 0 auto;
+  padding: 0;
+  border: 0;
+  background: var(--bg);
+  color: var(--ink);
+  box-shadow: -12px 0 32px rgb(0 0 0 / 0.2);
+}
+
+.drawer::backdrop {
+  background: rgb(10 15 26 / 0.55);
+}
+
+.drawer-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 12px 12px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.drawer-head h2 {
+  font-size: 1.25rem;
+}
+
+.drawer-body {
+  flex: 1;
+  margin: 0;
+  padding: 8px 24px;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.drawer-empty {
+  padding: 32px 24px;
+  color: var(--ink-muted);
+}
+
+.drawer-foot {
+  padding: 20px 24px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.drawer-row {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.drawer-row:last-child {
+  border-bottom: 0;
+}
+
+.drawer-row-title {
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.drawer-row-title:hover {
+  text-decoration: underline;
+}
+
+.drawer-row p {
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+
+.drawer-row-price {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.drawer-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.drawer-total {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .drawer[open] {
+    animation: drawer-in 0.25s ease;
+  }
+
+  .drawer[open]::backdrop {
+    animation: fade-in 0.25s ease;
+  }
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Locks the page behind the open panel */
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
+.heart-on {
+  fill: var(--danger-ink);
+  color: var(--danger-ink);
+}
+
+.qty-select {
+  height: 36px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
