@@ -55,6 +55,14 @@ public class OrderItem {
 		this.unitPrice = product.getPrice();
 	}
 
+	public Long getId() {
+		return id;
+	}
+
+	public CustomerOrder getOrder() {
+		return order;
+	}
+
 	public Product getProduct() {
 		return product;
 	}

@@ -11,6 +11,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -19,7 +21,11 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(BookoraException.class)
 	ProblemDetail handleApplication(BookoraException ex) {
-		return ProblemDetail.forStatusAndDetail(ex.getStatus(), ex.getMessage());
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(ex.getStatus(), ex.getMessage());
+		if (ex instanceof FieldException fieldException) {
+			problem.setProperty("errors", fieldException.getErrors());
+		}
+		return problem;
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
@@ -30,6 +36,16 @@ public class GlobalExceptionHandler {
 		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Validation failed");
 		problem.setProperty("errors", errors);
 		return problem;
+	}
+
+	@ExceptionHandler(MaxUploadSizeExceededException.class)
+	ProblemDetail handleTooLarge(MaxUploadSizeExceededException ex) {
+		return ProblemDetail.forStatusAndDetail(HttpStatus.CONTENT_TOO_LARGE, "The file is larger than 12 MB");
+	}
+
+	@ExceptionHandler(MissingServletRequestPartException.class)
+	ProblemDetail handleMissingFile(MissingServletRequestPartException ex) {
+		return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Choose a file to upload");
 	}
 
 	@ExceptionHandler(AuthenticationException.class)

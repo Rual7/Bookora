@@ -136,9 +136,9 @@ public class OrderServiceImpl implements OrderService {
 		return "BK-%d-%06d".formatted(Year.now().getValue(), orders.nextOrderSequence());
 	}
 
-	private static OrderDto toDto(CustomerOrder order) {
+	static OrderDto toDto(CustomerOrder order) {
 		List<OrderItemDto> items = order.getItems().stream()
-				.map(i -> new OrderItemDto(i.getProductTitle(), i.getProductFormat(), i.getQuantity(), i.getUnitPrice(),
+				.map(i -> new OrderItemDto(i.getId(), i.getProductTitle(), i.getProductFormat(), i.getQuantity(), i.getUnitPrice(),
 						i.getLineTotal()))
 				.toList();
 		int itemCount = items.stream().mapToInt(OrderItemDto::quantity).sum();

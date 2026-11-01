@@ -3,6 +3,7 @@ package com.bookora.service;
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import com.bookora.dto.ProductDto;
 import com.bookora.dto.ReviewDto;
 import com.bookora.model.Author;
 import com.bookora.model.Book;
+import com.bookora.model.BookImage;
 import com.bookora.model.Product;
 import com.bookora.model.ProductFormat;
 import com.bookora.model.Review;
@@ -41,7 +43,7 @@ public class BookMapper {
 				authorNames(book), price, CURRENCY, availability(products));
 	}
 
-	public BookDetailDto toDetail(Book book, RatingSummary rating, List<Review> reviews) {
+	public BookDetailDto toDetail(Book book, RatingSummary rating, List<Review> reviews, Set<Long> buyerIds) {
 		List<CategoryDto> categories = book.getCategories().stream()
 				.map(c -> new CategoryDto(c.getId(), c.getName(), c.getSlug(), c.getDescription()))
 				.toList();
@@ -51,10 +53,11 @@ public class BookMapper {
 				.toList();
 		List<ReviewDto> reviewDtos = reviews.stream()
 				.map(r -> new ReviewDto(r.getRating(), r.getTitle(), r.getComment(), r.getUser().getFirstName(),
-						r.getCreatedAt()))
+						buyerIds.contains(r.getUser().getId()), r.getCreatedAt()))
 				.toList();
 		return new BookDetailDto(book.getId(), book.getTitle(), book.getSlug(), book.getDescription(),
-				book.getCoverImagePath(), book.getPublisher(), book.getPublishedOn(), book.getLanguageCode(),
+				book.getCoverImagePath(), book.getImages().stream().map(BookImage::getPath).toList(),
+				book.getPublisher(), book.getPublishedOn(), book.getLanguageCode(),
 				book.getPageCount(), authorNames(book), categories, products,
 				rating == null ? null : rating.getAverageRating(),
 				rating == null ? 0 : rating.getReviewCount(), reviewDtos);

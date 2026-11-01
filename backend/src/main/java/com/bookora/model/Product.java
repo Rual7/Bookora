@@ -40,6 +40,24 @@ public class Product extends BaseEntity {
 	protected Product() {
 	}
 
+	public Product(Book book, String sku, ProductFormat format) {
+		this.book = book;
+		this.sku = sku;
+		this.format = format;
+	}
+
+	/** E-books have no stock, so their quantity is always stored as 0. */
+	public void update(String isbn, BigDecimal price, int stockQuantity, boolean active) {
+		this.isbn = isbn;
+		this.price = price;
+		this.stockQuantity = format.isDigital() ? 0 : stockQuantity;
+		this.active = active;
+	}
+
+	public void deactivate() {
+		active = false;
+	}
+
 	public Book getBook() {
 		return book;
 	}

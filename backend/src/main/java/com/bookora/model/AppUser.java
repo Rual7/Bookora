@@ -39,6 +39,16 @@ public class AppUser extends BaseEntity {
 		this.lastName = lastName;
 	}
 
+	public static AppUser admin(String email, String passwordHash, String firstName, String lastName) {
+		AppUser user = new AppUser(email, passwordHash, firstName, lastName);
+		user.role = Role.ADMIN;
+		return user;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	public String getEmail() {
 		return email;
 	}

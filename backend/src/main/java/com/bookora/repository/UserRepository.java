@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import jakarta.persistence.LockModeType;
 
 import com.bookora.model.AppUser;
+import com.bookora.model.Role;
 
 public interface UserRepository extends JpaRepository<AppUser, Long> {
 
@@ -21,5 +22,7 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
 	Optional<AppUser> findAndLockByEmail(@Param("email") String email);
 
 	boolean existsByEmailIgnoreCase(String email);
+
+	boolean existsByRole(Role role);
 
 }

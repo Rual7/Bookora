@@ -36,8 +36,24 @@ public class Review extends BaseEntity {
 	protected Review() {
 	}
 
+	public Review(AppUser user, Book book, int rating, String title, String comment) {
+		this.user = user;
+		this.book = book;
+		this.rating = (short) rating;
+		this.title = title;
+		this.comment = comment;
+	}
+
+	public void moderate(ReviewStatus status) {
+		this.status = status;
+	}
+
 	public AppUser getUser() {
 		return user;
+	}
+
+	public Book getBook() {
+		return book;
 	}
 
 	public short getRating() {

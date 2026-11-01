@@ -21,6 +21,7 @@ import com.bookora.exception.ResourceNotFoundException;
 import com.bookora.model.BookSort;
 import com.bookora.model.ProductFormat;
 import com.bookora.repository.BookRepository;
+import com.bookora.repository.OrderRepository;
 import com.bookora.repository.ReviewRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,8 +33,11 @@ class BookServiceImplTest {
 	@Mock
 	private ReviewRepository reviews;
 
+	@Mock
+	private OrderRepository orders;
+
 	private BookServiceImpl service() {
-		return new BookServiceImpl(books, reviews, new BookMapper());
+		return new BookServiceImpl(books, reviews, orders, new BookMapper());
 	}
 
 	@Test

@@ -1,5 +1,6 @@
 package com.bookora.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -13,6 +14,9 @@ public class ContactMessage extends BaseEntity {
 
 	private String message;
 
+	@Column(nullable = false)
+	private boolean handled;
+
 	protected ContactMessage() {
 	}
 
@@ -20,6 +24,10 @@ public class ContactMessage extends BaseEntity {
 		this.name = name;
 		this.email = email;
 		this.message = message;
+	}
+
+	public void setHandled(boolean handled) {
+		this.handled = handled;
 	}
 
 	public String getName() {
@@ -32,6 +40,10 @@ public class ContactMessage extends BaseEntity {
 
 	public String getMessage() {
 		return message;
+	}
+
+	public boolean isHandled() {
+		return handled;
 	}
 
 }

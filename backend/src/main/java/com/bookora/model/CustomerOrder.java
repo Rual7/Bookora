@@ -79,6 +79,14 @@ public class CustomerOrder extends BaseEntity {
 		this.paidAt = Instant.now();
 	}
 
+	public void markShipped() {
+		this.status = OrderStatus.SHIPPED;
+	}
+
+	public void markDelivered() {
+		this.status = OrderStatus.DELIVERED;
+	}
+
 	public void markCancelled() {
 		this.status = OrderStatus.CANCELLED;
 	}

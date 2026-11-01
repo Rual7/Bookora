@@ -2,6 +2,7 @@ package com.bookora.repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -13,6 +14,8 @@ import com.bookora.model.Product;
 import jakarta.persistence.LockModeType;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
+
+	Optional<Product> findByIsbn(String isbn);
 
 	/** Locks the rows (always in id order, so two checkouts cannot block each other forever) while stock is checked and reduced. */
 	@Lock(LockModeType.PESSIMISTIC_WRITE)

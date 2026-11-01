@@ -1,5 +1,6 @@
 package com.bookora.controller;
 
+import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -131,7 +132,7 @@ class CheckoutTest {
 		mvc.perform(get("/api/cart").session(session)).andExpect(jsonPath("$.itemCount").value(0));
 		mvc.perform(get("/api/orders").session(session))
 				.andExpect(jsonPath("$.length()").value(1))
-				.andExpect(jsonPath("$[0].orderNumber").value(org.hamcrest.Matchers.startsWith("BK-")));
+				.andExpect(jsonPath("$[0].orderNumber").value(startsWith("BK-")));
 	}
 
 	@Test

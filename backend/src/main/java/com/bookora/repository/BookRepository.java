@@ -22,6 +22,12 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
 	Optional<Book> findBySlugAndActiveTrue(String slug);
 
+	boolean existsBySlug(String slug);
+
+	/** Every book, hidden ones included, for the administration list. {@code query} is lower-cased and wrapped in %. */
+	@Query("select b from Book b where :query = '' or lower(b.title) like :query order by b.title")
+	Page<Book> searchAll(@Param("query") String query, Pageable pageable);
+
 	/**
 	 * Empty strings mean "no filter" so the query never binds untyped nulls.
 	 * {@code query} must already be lower-cased and wrapped in % wildcards.

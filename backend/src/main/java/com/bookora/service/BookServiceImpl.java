@@ -2,6 +2,7 @@ package com.bookora.service;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,7 @@ import com.bookora.model.ProductFormat;
 import com.bookora.model.Review;
 import com.bookora.model.ReviewStatus;
 import com.bookora.repository.BookRepository;
+import com.bookora.repository.OrderRepository;
 import com.bookora.repository.RatingSummary;
 import com.bookora.repository.ReviewRepository;
 
@@ -27,11 +29,13 @@ public class BookServiceImpl implements BookService {
 
 	private final BookRepository books;
 	private final ReviewRepository reviews;
+	private final OrderRepository orders;
 	private final BookMapper mapper;
 
-	public BookServiceImpl(BookRepository books, ReviewRepository reviews, BookMapper mapper) {
+	public BookServiceImpl(BookRepository books, ReviewRepository reviews, OrderRepository orders, BookMapper mapper) {
 		this.books = books;
 		this.reviews = reviews;
+		this.orders = orders;
 		this.mapper = mapper;
 	}
 
@@ -43,7 +47,7 @@ public class BookServiceImpl implements BookService {
 	@Override
 	public PageDto<BookSummaryDto> search(String query, String category, String format, BookSort sort,
 			Pageable pageable) {
-		String like = isBlank(query) ? "" : "%" + escapeLike(query.trim().toLowerCase(Locale.ROOT)) + "%";
+		String like = LikePattern.contains(query);
 		List<ProductFormat> formats = formatsFor(format);
 		Page<Book> found = books.search(like, isBlank(category) ? "" : category.trim(), formats, sort.name(), pageable);
 		return PageDto.of(found.map(book -> mapper.toSummary(book, formats)));
@@ -75,15 +79,12 @@ public class BookServiceImpl implements BookService {
 				.orElseThrow(() -> new ResourceNotFoundException("Book not found: " + slug));
 		RatingSummary rating = books.findRating(book.getId()).orElse(null);
 		List<Review> approved = reviews.findByBookIdAndStatusOrderByCreatedAtDesc(book.getId(), ReviewStatus.APPROVED);
-		return mapper.toDetail(book, rating, approved);
+		Set<Long> buyers = Set.copyOf(orders.findBuyerIds(book.getId()));
+		return mapper.toDetail(book, rating, approved, buyers);
 	}
 
 	private static boolean isBlank(String value) {
 		return value == null || value.isBlank();
-	}
-
-	private static String escapeLike(String value) {
-		return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
 	}
 
 }
