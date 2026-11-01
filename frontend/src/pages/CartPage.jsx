@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Trash2 } from 'lucide-react'
 import Cover from '../components/Cover.jsx'
+import EmptyCart from '../components/EmptyCart.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useCart } from '../context/CartContext.jsx'
 import { t } from '../i18n/t.js'
@@ -28,13 +29,7 @@ export default function CartPage() {
   }
 
   if (cart.items.length === 0) {
-    return (
-      <div className="container page">
-        <h1>{t('cart.title')}</h1>
-        <p className="muted">{t('cart.empty')}</p>
-        <p><Link to="/books" className="btn">{t('common.browse')}</Link></p>
-      </div>
-    )
+    return <EmptyCart title={t('cart.title')} />
   }
 
   return (

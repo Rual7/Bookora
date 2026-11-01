@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import AddressForm from '../components/AddressForm.jsx'
 import AddressText from '../components/AddressText.jsx'
+import EmptyCart from '../components/EmptyCart.jsx'
 import { useCart } from '../context/CartContext.jsx'
 import { t } from '../i18n/t.js'
 import { useAddresses } from '../hooks/useAddresses.js'
+import { goToPayment } from '../hooks/usePayment.js'
 import { api } from '../api/client.js'
 import { formatPrice, isDigital } from '../utils/format.js'
 import './CheckoutPage.css'
@@ -19,13 +21,7 @@ export default function CheckoutPage() {
   const [busy, setBusy] = useState(false)
 
   if (cart.items.length === 0) {
-    return (
-      <div className="container page">
-        <h1>{t('checkout.title')}</h1>
-        <p className="muted">{t('cart.empty')}</p>
-        <p><Link to="/books" className="btn">{t('common.browse')}</Link></p>
-      </div>
-    )
+    return <EmptyCart title={t('checkout.title')} />
   }
 
   const needsShipping = cart.items.some((item) => !isDigital(item.format))
@@ -38,13 +34,22 @@ export default function CheckoutPage() {
     setAdding(false)
   }
 
+  // The order exists once it is placed. If the payment page cannot be opened, the order page offers to try again.
+  async function openPayment(orderNumber) {
+    try {
+      await goToPayment(orderNumber)
+    } catch (problem) {
+      navigate(`/orders/${orderNumber}`, { state: { paymentProblem: problem.message }, replace: true })
+    }
+  }
+
   async function placeOrder() {
     setBusy(true)
     setError('')
     try {
       const order = await api.post('/api/checkout', { addressId: needsShipping ? selectedId : null })
       await reloadCart()
-      navigate(`/orders/${order.orderNumber}`, { state: { placed: true }, replace: true })
+      await openPayment(order.orderNumber)
     } catch (problem) {
       setError(problem.message)
       setBusy(false)

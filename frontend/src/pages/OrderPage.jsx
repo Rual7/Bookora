@@ -1,24 +1,45 @@
 import { useEffect, useState } from 'react'
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import AddressText from '../components/AddressText.jsx'
 import OrderStatus from '../components/OrderStatus.jsx'
 import { t } from '../i18n/t.js'
-import { useFetch } from '../hooks/useFetch.js'
+import { useOrder } from '../hooks/useOrder.js'
+import { usePayment } from '../hooks/usePayment.js'
 import { formatDate, formatPrice } from '../utils/format.js'
 import './OrderPage.css'
+
+const CONFIRM_EVERY_MS = 2000
+const GIVE_UP_AFTER_MS = 40000
 
 // Old orders keep the currency they were placed in, so prices are shown with order.currency.
 export default function OrderPage() {
   const { orderNumber } = useParams()
   const { state, pathname } = useLocation()
   const navigate = useNavigate()
-  // The notice belongs to the moment the order is placed, so it is remembered once and then dropped from history.
-  const [justPlaced] = useState(Boolean(state?.placed))
-  const { data: order, error, loading } = useFetch(`/api/orders/${orderNumber}`)
+  const [params] = useSearchParams()
+  const { order, error, loading, reload } = useOrder(orderNumber)
+  const payment = usePayment()
+
+  // Set when the customer comes back from the payment page; the order is confirmed by a webhook that may be a moment late.
+  const returnedFrom = params.get('payment')
+  // The checkout page passes a message when it could not open the payment page; it is shown once, then dropped from history.
+  const [checkoutProblem] = useState(state?.paymentProblem ?? '')
+  const [gaveUp, setGaveUp] = useState(false)
+  const confirming = returnedFrom === 'success' && order?.status === 'PENDING_PAYMENT' && !gaveUp
 
   useEffect(() => {
-    if (justPlaced) navigate(pathname, { replace: true, state: null })
-  }, [justPlaced, navigate, pathname])
+    if (checkoutProblem) navigate(pathname, { replace: true, state: null })
+  }, [checkoutProblem, navigate, pathname])
+
+  useEffect(() => {
+    if (!confirming) return
+    const poll = setInterval(reload, CONFIRM_EVERY_MS)
+    const stop = setTimeout(() => setGaveUp(true), GIVE_UP_AFTER_MS)
+    return () => {
+      clearInterval(poll)
+      clearTimeout(stop)
+    }
+  }, [confirming, reload])
 
   if (loading) return <div className="container page"><p className="muted">{t('common.loading')}</p></div>
   if (error) {
@@ -33,15 +54,26 @@ export default function OrderPage() {
   if (!order) return null
 
   const price = (amount) => formatPrice(amount, order.currency)
+  const unpaid = order.status === 'PENDING_PAYMENT'
+  const notice = describeNotice()
+
+  // One message at a time: what just happened if there is something to say, otherwise that the order awaits payment.
+  function describeNotice() {
+    if (order.status === 'PAID' && returnedFrom === 'success') return { tone: 'ok', text: t('order.paidThanks') }
+    if (confirming) return { tone: 'ok', text: t('order.confirming') }
+    if (!unpaid) return null
+    if (checkoutProblem) return { tone: 'warn', text: t('order.paymentProblem', { message: checkoutProblem }) }
+    if (gaveUp) return { tone: 'warn', text: t('order.confirmingLate') }
+    if (returnedFrom === 'cancelled') return { tone: 'warn', text: t('order.paymentCancelled') }
+    return { tone: 'warn', text: t('order.awaiting') }
+  }
 
   return (
     <div className="container page">
       <p><Link to="/orders" className="text-link">&larr; {t('order.allOrders')}</Link></p>
       <h1>{t('order.title', { number: order.orderNumber })}</h1>
 
-      {justPlaced && (
-        <p className="order-placed" role="status">{t('order.placed')}</p>
-      )}
+      {notice && <p className={`order-notice order-notice-${notice.tone}`} role="status">{notice.text}</p>}
 
       <p className="order-meta">
         <OrderStatus status={order.status} />
@@ -86,14 +118,25 @@ export default function OrderPage() {
         </table>
       </div>
 
-      <section className="order-delivery" aria-labelledby="delivery-title">
-        <h2 id="delivery-title">{t('cart.delivery')}</h2>
-        {order.shippingAddress ? (
-          <AddressText address={order.shippingAddress} />
-        ) : (
-          <p className="muted">{t('order.noDelivery')}</p>
+      <div className="order-bottom">
+        <section className="order-delivery" aria-labelledby="delivery-title">
+          <h2 id="delivery-title">{t('cart.delivery')}</h2>
+          {order.shippingAddress ? (
+            <AddressText address={order.shippingAddress} />
+          ) : (
+            <p className="muted">{t('order.noDelivery')}</p>
+          )}
+        </section>
+
+        {unpaid && !confirming && (
+          <div className="order-pay">
+            <button type="button" className="btn" onClick={() => payment.pay(order.orderNumber)} disabled={payment.busy}>
+              {payment.busy ? t('order.paying') : t('order.pay')}
+            </button>
+            {payment.error && <p className="form-error" role="alert">{payment.error}</p>}
+          </div>
         )}
-      </section>
+      </div>
     </div>
   )
 }

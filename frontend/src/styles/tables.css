@@ -120,6 +120,11 @@
   font-weight: 600;
 }
 
+.status-pending_payment {
+  background: var(--warning-bg);
+  color: var(--warning-ink);
+}
+
 .status-paid,
 .status-shipped,
 .status-delivered {

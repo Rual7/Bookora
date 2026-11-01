@@ -1,10 +1,18 @@
-.order-placed {
+.order-notice {
   max-width: 640px;
   margin-bottom: 24px;
   padding: 16px 20px;
   border-radius: var(--radius-md);
+}
+
+.order-notice-ok {
   background: var(--success-bg);
   color: var(--success-ink);
+}
+
+.order-notice-warn {
+  background: var(--warning-bg);
+  color: var(--warning-ink);
 }
 
 .order-meta {
@@ -15,11 +23,41 @@
   margin-bottom: 24px;
 }
 
-.order-delivery {
+/* Delivery on the left, the pay button on the right; on a phone they stack and the button fills the width. */
+.order-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
   margin-top: 32px;
 }
 
 .order-delivery h2 {
   margin-bottom: 12px;
   font-size: 1.25rem;
+}
+
+.order-pay {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.order-pay .btn {
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .order-bottom {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .order-pay {
+    align-items: flex-end;
+  }
+
+  .order-pay .btn {
+    width: auto;
+  }
 }

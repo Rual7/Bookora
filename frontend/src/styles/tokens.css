@@ -14,6 +14,8 @@
   --accent-text: #7a5320;
   --success-bg: #dcebe4;
   --success-ink: #2f6b57;
+  --warning-bg: #f7e8c8;
+  --warning-ink: #7a5320;
   --danger-ink: #a63a2e;
   --banner-bg: #0b1220;
   --logo-pages: #111a2e;
@@ -38,6 +40,8 @@
   --accent-text: #d9ae6e;
   --success-bg: #1d3a33;
   --success-ink: #8fd1b8;
+  --warning-bg: #3b3019;
+  --warning-ink: #e8c58a;
   --danger-ink: #f0907f;
   --banner-bg: #0a0f1a;
   --logo-pages: #f3eee4;
