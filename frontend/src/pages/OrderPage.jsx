@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Download, PackageX } from 'lucide-react'
 import AddressText from '../components/AddressText.jsx'
+import StatusPage from '../components/StatusPage.jsx'
 import OrderStatus from '../components/OrderStatus.jsx'
 import { t } from '../i18n/t.js'
 import { useOrder } from '../hooks/useOrder.js'
 import { usePayment } from '../hooks/usePayment.js'
-import { formatDate, formatPrice } from '../utils/format.js'
+import { downloadFile } from '../api/client.js'
+import { formatDate, formatPrice, isDigital } from '../utils/format.js'
 import './OrderPage.css'
 
 const CONFIRM_EVERY_MS = 2000
@@ -25,6 +28,7 @@ export default function OrderPage() {
   // The checkout page passes a message when it could not open the payment page; it is shown once, then dropped from history.
   const [checkoutProblem] = useState(state?.paymentProblem ?? '')
   const [gaveUp, setGaveUp] = useState(false)
+  const [downloadProblem, setDownloadProblem] = useState('')
   const confirming = returnedFrom === 'success' && order?.status === 'PENDING_PAYMENT' && !gaveUp
 
   useEffect(() => {
@@ -43,19 +47,29 @@ export default function OrderPage() {
 
   if (loading) return <div className="container page"><p className="muted">{t('common.loading')}</p></div>
   if (error) {
+    const missing = error.status === 404
     return (
-      <div className="container page">
-        <h1>{t('order.notFound')}</h1>
-        <p className="muted">{error.status === 404 ? t('order.notFoundText') : error.message}</p>
-        <p><Link to="/orders" className="btn">{t('order.backToOrders')}</Link></p>
-      </div>
+      <StatusPage icon={PackageX} code={missing ? '404' : undefined} title={missing ? t('order.notFound') : t('common.wrong')}
+        text={missing ? t('order.notFoundText') : t('error.loadText')}>
+        <Link to="/orders" className="btn">{t('order.backToOrders')}</Link>
+      </StatusPage>
     )
   }
   if (!order) return null
 
   const price = (amount) => formatPrice(amount, order.currency)
   const unpaid = order.status === 'PENDING_PAYMENT'
+  const paid = ['PAID', 'SHIPPED', 'DELIVERED'].includes(order.status)
   const notice = describeNotice()
+
+  async function download(item) {
+    setDownloadProblem('')
+    try {
+      await downloadFile(`/api/downloads/${item.id}`)
+    } catch (problem) {
+      setDownloadProblem(problem.message)
+    }
+  }
 
   // One message at a time: what just happened if there is something to say, otherwise that the order awaits payment.
   function describeNotice() {
@@ -82,6 +96,8 @@ export default function OrderPage() {
         </span>
       </p>
 
+      {downloadProblem && <p className="form-error" role="alert">{t('order.downloadProblem', { message: downloadProblem })}</p>}
+
       <div className="table-wrap">
         <table className="data-table">
           <caption className="visually-hidden">{t('order.caption', { number: order.orderNumber })}</caption>
@@ -97,7 +113,15 @@ export default function OrderPage() {
           <tbody>
             {order.items.map((item) => (
               <tr key={`${item.title}-${item.format}`}>
-                <th scope="row">{item.title}</th>
+                <th scope="row">
+                  {item.title}
+                  {paid && isDigital(item.format) && (
+                    <button type="button" className="link-btn order-download" onClick={() => download(item)}
+                      aria-label={t('order.downloadLabel', { title: item.title })}>
+                      <Download size={16} strokeWidth={1.5} aria-hidden="true" /> {t('order.download')}
+                    </button>
+                  )}
+                </th>
                 <td data-label={t('order.format')}>{t(`format.${item.format}`)}</td>
                 <td className="num" data-label={t('order.price')}>{price(item.unitPrice)}</td>
                 <td className="num" data-label={t('order.qty')}>{item.quantity}</td>

@@ -1,0 +1,15 @@
+.review-form {
+  max-width: 560px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.review-form .btn {
+  align-self: flex-start;
+}
+
+.review-form h3 {
+  font-family: var(--font-sans);
+  font-size: 18px;
+}

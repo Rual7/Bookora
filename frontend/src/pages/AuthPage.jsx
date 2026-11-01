@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import FormField from '../components/FormField.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { t } from '../i18n/t.js'
@@ -12,15 +12,13 @@ export default function AuthPage({ mode }) {
   const isRegister = mode === 'register'
   const { user, login, register } = useAuth()
   const navigate = useNavigate()
-  const location = useLocation()
-  const goBackTo = location.state?.from ?? '/'
 
   const [form, setForm] = useState(EMPTY_FORM)
   const [error, setError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({})
   const [busy, setBusy] = useState(false)
 
-  if (user) return <Navigate to={goBackTo} replace />
+  if (user) return <Navigate to="/" replace />
 
   function update(event) {
     setForm({ ...form, [event.target.name]: event.target.value })
@@ -37,7 +35,7 @@ export default function AuthPage({ mode }) {
       } else {
         await login(form.email, form.password)
       }
-      navigate(goBackTo, { replace: true })
+      navigate('/', { replace: true })
     } catch (problem) {
       const fields = problem.fieldErrors ?? {}
       setFieldErrors(fields)
@@ -77,7 +75,7 @@ export default function AuthPage({ mode }) {
 
         <p className="auth-switch muted">
           {isRegister ? t('auth.haveAccount') : t('auth.newHere')}{' '}
-          <Link to={isRegister ? '/login' : '/register'} state={location.state} className="text-link">
+          <Link to={isRegister ? '/login' : '/register'} className="text-link">
             {isRegister ? t('nav.signIn') : t('auth.createLink')}
           </Link>
         </p>

@@ -7,6 +7,34 @@
   max-width: 280px;
 }
 
+.book-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.book-thumb {
+  display: block;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  background: none;
+  overflow: hidden;
+}
+
+.book-thumb img {
+  width: 60px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+}
+
+.book-thumb.is-selected {
+  border-color: var(--accent);
+}
+
 .book-detail h1 {
   margin-bottom: 4px;
 }
@@ -155,6 +183,10 @@
 }
 
 .review-author {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
   margin-top: 4px;
   font-size: 13px;
 }

@@ -1,11 +1,14 @@
 import { Link } from 'react-router-dom'
 import Logo from './Logo.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 import { t } from '../i18n/t.js'
 import './Footer.css'
 
 const YEAR = new Date().getFullYear()
 
 export default function Footer() {
+  const { user } = useAuth()
+
   return (
     <footer className="site-footer">
       <div className="container footer-inner">
@@ -23,9 +26,10 @@ export default function Footer() {
 
         <nav className="footer-col" aria-label={t('footer.account')}>
           <h2>{t('footer.account')}</h2>
-          <Link to="/login">{t('nav.signIn')}</Link>
+          {!user && <Link to="/login">{t('nav.signIn')}</Link>}
           <Link to="/cart">{t('footer.cart')}</Link>
           <Link to="/orders">{t('footer.orders')}</Link>
+          <Link to="/ebooks">{t('footer.ebooks')}</Link>
           <Link to="/addresses">{t('footer.addresses')}</Link>
         </nav>
 

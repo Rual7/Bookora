@@ -127,9 +127,20 @@
 
 .status-paid,
 .status-shipped,
-.status-delivered {
+.status-delivered,
+.status-clean,
+.status-approved {
   background: var(--success-bg);
   color: var(--success-ink);
+}
+
+.status-pending {
+  background: var(--warning-bg);
+  color: var(--warning-ink);
+}
+
+.status-rejected {
+  color: var(--danger-ink);
 }
 
 .status-cancelled {

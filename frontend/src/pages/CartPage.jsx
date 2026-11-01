@@ -9,10 +9,6 @@ import { t } from '../i18n/t.js'
 import { formatPrice } from '../utils/format.js'
 import './CartPage.css'
 
-// Only for the note in the summary; the server decides the real delivery cost (see its Shipping class).
-const DELIVERY_COST = 2.5
-const FREE_DELIVERY_ABOVE = 40
-
 export default function CartPage() {
   const { user } = useAuth()
   const { cart, changeQuantity, removeItem } = useCart()
@@ -87,12 +83,12 @@ export default function CartPage() {
             <span>{t('cart.total')}</span>
             <strong>{formatPrice(cart.total)}</strong>
           </p>
-          <p className="muted summary-note">{t('cart.deliveryNote', { cost: formatPrice(DELIVERY_COST), limit: formatPrice(FREE_DELIVERY_ABOVE) })}</p>
+          <p className="muted summary-note">{t('cart.deliveryNote', { cost: formatPrice(cart.standardShipping), limit: formatPrice(cart.freeShippingAbove) })}</p>
           {user ? (
             <Link to="/checkout" className="btn btn-block">{t('cart.checkout')}</Link>
           ) : (
             <>
-              <Link to="/login" state={{ from: '/cart' }} className="btn btn-block">{t('cart.signInToCheckout')}</Link>
+              <Link to="/login" className="btn btn-block">{t('cart.signInToCheckout')}</Link>
               <p className="muted summary-note">{t('cart.keptNote')}</p>
             </>
           )}

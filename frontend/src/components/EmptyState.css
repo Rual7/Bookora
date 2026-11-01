@@ -1,4 +1,4 @@
-.empty-cart {
+.empty-state {
   display: grid;
   justify-items: center;
   gap: 16px;
@@ -9,7 +9,7 @@
   text-align: center;
 }
 
-.empty-cart-icon {
+.empty-state-icon {
   display: grid;
   place-items: center;
   width: 72px;
@@ -19,7 +19,7 @@
   color: var(--ink-muted);
 }
 
-.empty-cart p {
+.empty-state p {
   margin-bottom: 8px;
   color: var(--ink-muted);
 }

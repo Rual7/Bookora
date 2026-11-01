@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { MapPin } from 'lucide-react'
 import AccountNav from '../components/AccountNav.jsx'
+import EmptyState from '../components/EmptyState.jsx'
 import AddressForm from '../components/AddressForm.jsx'
 import AddressText from '../components/AddressText.jsx'
 import { t } from '../i18n/t.js'
@@ -26,15 +28,20 @@ export default function AddressesPage() {
     }
   }
 
+  const isEmpty = addresses?.length === 0 && editing !== 'new'
+
   return (
     <div className="container page">
       <h1>{t('nav.account')}</h1>
       <AccountNav />
 
-      <h2 className="address-title">{t('addresses.title')}</h2>
       {(error || problem) && <p className="form-error" role="alert">{error || problem}</p>}
       {addresses === null && !error && <p className="muted">{t('common.loading')}</p>}
-      {addresses?.length === 0 && editing !== 'new' && <p className="muted">{t('addresses.none')}</p>}
+      {isEmpty && (
+        <EmptyState icon={MapPin} text={t('addresses.none')}>
+          <button type="button" className="btn" onClick={() => setEditing('new')}>{t('addresses.add')}</button>
+        </EmptyState>
+      )}
 
       <ul className="address-list">
         {addresses?.map((address) => (
@@ -63,7 +70,7 @@ export default function AddressesPage() {
           <AddressForm onSave={handleSave} onCancel={() => setEditing(null)} />
         </section>
       ) : (
-        <button type="button" className="btn" onClick={() => setEditing('new')}>{t('addresses.add')}</button>
+        !isEmpty && <button type="button" className="btn" onClick={() => setEditing('new')}>{t('addresses.add')}</button>
       )}
     </div>
   )

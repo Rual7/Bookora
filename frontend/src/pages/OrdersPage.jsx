@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
+import { Package } from 'lucide-react'
 import AccountNav from '../components/AccountNav.jsx'
+import EmptyState from '../components/EmptyState.jsx'
 import OrderStatus from '../components/OrderStatus.jsx'
 import { t } from '../i18n/t.js'
 import { useFetch } from '../hooks/useFetch.js'
@@ -16,10 +18,9 @@ export default function OrdersPage() {
       {error && <p className="form-error" role="alert">{error.message}</p>}
       {loading && <p className="muted">{t('common.loading')}</p>}
       {orders?.length === 0 && (
-        <>
-          <p className="muted">{t('orders.none')}</p>
-          <p><Link to="/books" className="btn">{t('common.browse')}</Link></p>
-        </>
+        <EmptyState icon={Package} text={t('orders.none')}>
+          <Link to="/books" className="btn">{t('common.browse')}</Link>
+        </EmptyState>
       )}
 
       {orders?.length > 0 && (

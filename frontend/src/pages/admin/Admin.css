@@ -1,0 +1,106 @@
+/* Pieces shared by the administration pages */
+
+.admin-heading {
+  margin-bottom: 12px;
+}
+
+.admin-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.admin-search .btn {
+  margin: 0;
+}
+
+.admin-toolbar .field,
+.admin-toolbar .filter {
+  min-width: 220px;
+}
+
+.admin-toolbar-end {
+  margin-left: auto;
+}
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-table .actions {
+  text-align: right;
+}
+
+.admin-table .actions .admin-actions {
+  justify-content: flex-end;
+}
+
+.admin-message {
+  max-width: 48ch;
+  white-space: normal;
+}
+
+.admin-table td.admin-message {
+  min-width: 240px;
+}
+
+/* A long list scrolls inside its own box with the column titles kept on top, so the page itself stays short. */
+.admin-scroll {
+  max-height: min(70vh, 640px);
+  overflow: auto;
+}
+
+.admin-scroll thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.admin-count {
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.admin-more {
+  padding: 12px;
+  text-align: center;
+}
+
+.admin-end {
+  height: 1px;
+}
+
+.admin-notice {
+  margin-bottom: 16px;
+}
+
+@media (max-width: 639px) {
+  .admin-table .actions .admin-actions {
+    justify-content: flex-start;
+  }
+
+  .data-table td.actions {
+    display: block;
+    text-align: left;
+  }
+
+  .data-table td.admin-message {
+    display: block;
+    text-align: left;
+  }
+
+  .data-table td.admin-message::before {
+    display: block;
+  }
+}

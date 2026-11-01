@@ -15,6 +15,17 @@
   color: var(--warning-ink);
 }
 
+.order-download {
+  display: flex;
+  min-height: 32px;
+  color: var(--accent-text);
+  font-weight: 500;
+}
+
+.order-download:hover {
+  color: var(--accent-text);
+}
+
 .order-meta {
   display: flex;
   align-items: center;

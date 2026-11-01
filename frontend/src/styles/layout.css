@@ -48,6 +48,22 @@
   background: var(--accent-hover);
 }
 
+.btn-small {
+  min-height: 40px;
+  padding: 0 18px;
+  font-size: 14px;
+}
+
+.btn-outline {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--ink);
+}
+
+.btn-outline:hover {
+  background: var(--surface-2);
+}
+
 .btn .btn-arrow {
   transition: transform 0.2s ease;
 }

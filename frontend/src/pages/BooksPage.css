@@ -40,28 +40,13 @@
   list-style: none;
 }
 
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 40px;
-  font-size: 14px;
+.books-more {
+  margin-top: 24px;
+  text-align: center;
 }
 
-.page-btn {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  background: var(--surface);
-}
-
-.page-btn:disabled {
-  opacity: 0.4;
-  cursor: default;
+.books-end {
+  height: 1px;
 }
 
 @media (min-width: 640px) {

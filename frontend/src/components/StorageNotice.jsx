@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Cookie } from 'lucide-react'
 import { t } from '../i18n/t.js'
 import './StorageNotice.css'
 
@@ -28,9 +29,15 @@ export default function StorageNotice() {
   if (!visible) return null
 
   return (
-    <section className="storage-notice" aria-label={t('storage.label')}>
-      <p>{t('storage.text')}</p>
-      <button type="button" className="btn" onClick={dismiss}>{t('storage.ok')}</button>
+    <section className="storage-notice" aria-labelledby="storage-title">
+      <span className="storage-notice-icon">
+        <Cookie size={28} strokeWidth={1.5} aria-hidden="true" />
+      </span>
+      <div className="storage-notice-body">
+        <h2 id="storage-title">{t('storage.title')}</h2>
+        <p>{t('storage.text')}</p>
+      </div>
+      <button type="button" className="btn btn-small" onClick={dismiss}>{t('storage.ok')}</button>
     </section>
   )
 }

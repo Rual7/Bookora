@@ -27,7 +27,9 @@ async function csrfToken() {
 async function request(path, options = {}) {
   const method = options.method ?? 'GET'
   const headers = { Accept: 'application/json' }
-  if (options.body !== undefined) {
+  // A FormData body (a file upload) sets its own Content-Type with the multipart boundary.
+  const isUpload = options.body instanceof FormData
+  if (options.body !== undefined && !isUpload) {
     headers['Content-Type'] = 'application/json'
   }
   if (method !== 'GET') {
@@ -40,7 +42,7 @@ async function request(path, options = {}) {
     headers,
     credentials: 'same-origin',
     signal: options.signal,
-    body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
+    body: options.body === undefined || isUpload ? options.body : JSON.stringify(options.body),
   })
   if (!response.ok) {
     const problem = await response.json().catch(() => null)
@@ -48,6 +50,21 @@ async function request(path, options = {}) {
   }
   const text = await response.text()
   return text ? JSON.parse(text) : null
+}
+
+/** Fetches a file the signed-in customer may download and hands it to the browser as a save. */
+export async function downloadFile(path) {
+  const response = await fetch(path, { credentials: 'same-origin' })
+  if (!response.ok) {
+    const problem = await response.json().catch(() => null)
+    throw new ApiError(response.status, problem?.detail ?? response.statusText)
+  }
+  const disposition = response.headers.get('Content-Disposition') ?? ''
+  const link = document.createElement('a')
+  link.href = URL.createObjectURL(await response.blob())
+  link.download = /filename="?([^";]+)"?/.exec(disposition)?.[1] ?? 'ebook'
+  link.click()
+  URL.revokeObjectURL(link.href)
 }
 
 export const api = {

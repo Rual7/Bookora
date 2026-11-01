@@ -1,4 +1,7 @@
 import { Component } from 'react'
+import { TriangleAlert } from 'lucide-react'
+import StatusPage from './StatusPage.jsx'
+import { t } from '../i18n/t.js'
 
 /** Shows a message instead of an empty page if something in the app crashes while rendering. */
 export default class ErrorBoundary extends Component {
@@ -15,11 +18,10 @@ export default class ErrorBoundary extends Component {
   render() {
     if (!this.state.failed) return this.props.children
     return (
-      <div className="container page">
-        <h1>Something went wrong</h1>
-        <p className="muted">Please reload the page. If it keeps happening, try again in a few minutes.</p>
-        <p><button type="button" className="btn" onClick={() => window.location.reload()}>Reload</button></p>
-      </div>
+      <StatusPage icon={TriangleAlert} title={t('common.wrong')} text={t('error.crash')}>
+        <button type="button" className="btn" onClick={() => window.location.reload()}>{t('error.reload')}</button>
+        <a href="/" className="btn btn-outline">{t('notFound.home')}</a>
+      </StatusPage>
     )
   }
 }

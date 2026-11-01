@@ -5,7 +5,7 @@ import { useAuth } from './AuthContext.jsx'
 const CartContext = createContext(null)
 
 const GUEST_KEY = 'bookora-guest-cart'
-const EMPTY_CART = { items: [], itemCount: 0, subtotal: 0, shippingCost: 0, total: 0, currency: 'EUR' }
+const EMPTY_CART = { items: [], itemCount: 0, subtotal: 0, shippingCost: 0, total: 0, currency: 'EUR', standardShipping: 0, freeShippingAbove: 0 }
 
 function readGuestItems() {
   try {

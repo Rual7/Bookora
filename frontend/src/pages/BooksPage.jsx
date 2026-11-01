@@ -1,8 +1,8 @@
 import { useSearchParams } from 'react-router-dom'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
 import BookCard from '../components/BookCard.jsx'
 import { t } from '../i18n/t.js'
 import { useFetch } from '../hooks/useFetch.js'
+import { useInfiniteList, useOnVisible } from '../hooks/useInfiniteList.js'
 import './BooksPage.css'
 
 const FORMATS = [
@@ -22,27 +22,18 @@ const SORTS = [
 export default function BooksPage() {
   const [params, setParams] = useSearchParams()
   const { data: categories } = useFetch('/api/categories')
-  const { data, loading, error } = useFetch(`/api/books?${params.toString()}`)
+  const { items, total, loading, loadingMore, done, error, loadMore } = useInfiniteList(`/api/books?${params.toString()}`)
+  const endOfList = useOnVisible(loadMore, items.length)
 
   const category = params.get('category') ?? ''
   const format = params.get('format') ?? ''
   const sort = params.get('sort') ?? 'title'
-  const page = Number(params.get('page') ?? 0)
 
-  // Changing a filter always goes back to the first page.
   function setFilter(name, value) {
     const next = new URLSearchParams(params)
     if (value) next.set(name, value)
     else next.delete(name)
-    next.delete('page')
     setParams(next)
-  }
-
-  function goToPage(number) {
-    const next = new URLSearchParams(params)
-    next.set('page', number)
-    setParams(next)
-    window.scrollTo({ top: 0 })
   }
 
   const query = params.get('q')
@@ -73,31 +64,20 @@ export default function BooksPage() {
       {loading && <p className="muted">{t('common.loading')}</p>}
       {error && <p className="muted">{t('books.error')}</p>}
 
-      {data && (
+      {!loading && !error && (
         <>
           <p className="muted results-count" aria-live="polite">
-            {data.totalElements === 0 ? t('books.none') : t('books.count', { count: data.totalElements })}
+            {total === 0 ? t('books.none') : t('books.count', { count: total })}
           </p>
           <ul className="books-grid">
-            {data.content.map((book) => (
+            {items.map((book) => (
               <li key={book.id}>
                 <BookCard book={book} />
               </li>
             ))}
           </ul>
-          {data.totalPages > 1 && (
-            <nav className="pagination" aria-label={t('pagination.label')}>
-              <button type="button" className="page-btn" disabled={page === 0}
-                onClick={() => goToPage(page - 1)} aria-label={t('pagination.prev')}>
-                <ChevronLeft size={18} aria-hidden="true" />
-              </button>
-              <span>{t('pagination.status', { page: page + 1, total: data.totalPages })}</span>
-              <button type="button" className="page-btn" disabled={page + 1 >= data.totalPages}
-                onClick={() => goToPage(page + 1)} aria-label={t('pagination.next')}>
-                <ChevronRight size={18} aria-hidden="true" />
-              </button>
-            </nav>
-          )}
+          {loadingMore && <p className="muted books-more">{t('common.loading')}</p>}
+          {!done && <div ref={endOfList} className="books-end" aria-hidden="true" />}
         </>
       )}
     </div>

@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { Star } from 'lucide-react'
+import { BookX, Star } from 'lucide-react'
 import Cover from '../components/Cover.jsx'
+import StatusPage from '../components/StatusPage.jsx'
+import ReviewForm from '../components/ReviewForm.jsx'
 import WishlistButton from '../components/WishlistButton.jsx'
 import { useCart } from '../context/CartContext.jsx'
 import { t } from '../i18n/t.js'
@@ -16,11 +18,12 @@ export default function BookPage() {
 
   if (loading) return <div className="container page muted">{t('common.loading')}</div>
   if (error) {
+    const missing = error.status === 404
     return (
-      <div className="container page">
-        <h1>{error.status === 404 ? t('book.notFound') : t('common.wrong')}</h1>
-        <p className="muted"><Link to="/books" className="text-link">{t('book.backToAll')}</Link></p>
-      </div>
+      <StatusPage icon={BookX} code={missing ? '404' : undefined} title={missing ? t('book.notFound') : t('common.wrong')}
+        text={missing ? t('book.notFoundText') : t('error.loadText')}>
+        <Link to="/books" className="btn">{t('book.backToAll')}</Link>
+      </StatusPage>
     )
   }
   // key makes the format choice start fresh when the visitor moves to another book
@@ -32,6 +35,7 @@ function BookDetail({ book }) {
   const { openPanel } = usePanel()
 
   const [productId, setProductId] = useState(book.products[0]?.id)
+  const [imageIndex, setImageIndex] = useState(0)
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
 
@@ -53,7 +57,20 @@ function BookDetail({ book }) {
   return (
     <div className="container page book-detail">
       <div className="book-detail-cover">
-        <Cover book={book} />
+        <Cover book={{ ...book, coverImagePath: book.images[imageIndex] ?? book.coverImagePath }} />
+        {book.images.length > 1 && (
+          <ul className="book-thumbs" aria-label={t('book.images')}>
+            {book.images.map((path, index) => (
+              <li key={path}>
+                <button type="button" className={`book-thumb${index === imageIndex ? ' is-selected' : ''}`}
+                  aria-label={t('book.showImage', { number: index + 1 })} aria-pressed={index === imageIndex}
+                  onClick={() => setImageIndex(index)}>
+                  <img src={path} alt="" width="60" height="90" loading="lazy" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <div>
@@ -122,9 +139,13 @@ function BookDetail({ book }) {
               <Stars value={review.rating} />
               {review.title && <h3>{review.title}</h3>}
               {review.comment && <p>{review.comment}</p>}
-              <p className="muted review-author">{review.authorName}</p>
+              <p className="muted review-author">
+                {review.authorName}
+                {review.verifiedPurchase && <span className="status status-clean">{t('review.verified')}</span>}
+              </p>
             </article>
           ))}
+          <ReviewForm slug={book.slug} />
         </section>
       </div>
     </div>
