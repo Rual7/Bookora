@@ -37,7 +37,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
 /** The webhook endpoint with real signatures against the database. Stripe itself is never called. */
-@SpringBootTest(properties = "bookora.stripe.webhook-secret=" + SECRET)
+@SpringBootTest(properties = { "bookora.stripe.webhook-secret=" + SECRET, "bookora.stripe.secret-key=" })
 @AutoConfigureMockMvc
 @Transactional
 class StripeWebhookTest {
