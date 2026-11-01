@@ -181,3 +181,9 @@ Without Stripe keys the shop works, but "Pay now" answers that online payment is
 3. Restart the backend, place an order and pay with the test card `4242 4242 4242 4242` (any future date, any CVC). The order turns to **Paid** when the webhook arrives.
 
 An unpaid order keeps its books reserved until its payment page expires (30 minutes); then it is cancelled and the stock comes back. A background job also cancels unpaid orders older than an hour that never opened a payment page.
+
+### Administration
+
+Put `ADMIN_EMAIL` and `ADMIN_PASSWORD` in `.env` before the first start. When the shop has no administrator yet, the backend creates one from them; after that the two values are not used. Sign in and open **Your account → Administration** (`/admin`) to manage books, formats, covers, e-book files, orders, reviews, contact messages and customers.
+
+Uploaded cover images and e-book files are stored on disk, outside the web root, under `COVER_STORAGE_PATH` and `EBOOK_STORAGE_PATH` (default `backend/storage/`, which is git-ignored). Covers are re-encoded as JPEG on upload. E-books (PDF or EPUB, up to 12 MB) are checked by their real file type and for scripts or programs inside; only files that pass the check can be downloaded, and only by customers whose order is paid.
