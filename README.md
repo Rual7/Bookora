@@ -171,3 +171,13 @@ Notes:
 - The full stack (Apache + backend + database) can be built with `docker compose --profile full up -d --build`; the site is then on http://localhost:8081.
 
 Configuration is read from environment variables: database connection, Stripe keys, Turnstile secret, e-book storage path and public base URL.
+
+### Trying payments locally
+
+Without Stripe keys the shop works, but "Pay now" answers that online payment is not set up. To test a real payment in test mode:
+
+1. Put the **secret key** of your Stripe test account (`sk_test_...`) in `.env` as `STRIPE_SECRET_KEY`.
+2. Install the [Stripe CLI](https://stripe.com/docs/stripe-cli), sign in with `stripe login`, and forward webhooks to the backend: `stripe listen --forward-to localhost:8080/api/webhooks/stripe`. It prints a signing secret (`whsec_...`); put it in `.env` as `STRIPE_WEBHOOK_SECRET`.
+3. Restart the backend, place an order and pay with the test card `4242 4242 4242 4242` (any future date, any CVC). The order turns to **Paid** when the webhook arrives.
+
+An unpaid order keeps its books reserved until its payment page expires (30 minutes); then it is cancelled and the stock comes back. A background job also cancels unpaid orders older than an hour that never opened a payment page.

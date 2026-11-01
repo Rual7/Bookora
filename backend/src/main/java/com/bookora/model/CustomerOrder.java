@@ -74,6 +74,19 @@ public class CustomerOrder extends BaseEntity {
 		this.shippingCost = shippingCost;
 	}
 
+	public void markPaid() {
+		this.status = OrderStatus.PAID;
+		this.paidAt = Instant.now();
+	}
+
+	public void markCancelled() {
+		this.status = OrderStatus.CANCELLED;
+	}
+
+	public AppUser getUser() {
+		return user;
+	}
+
 	public BigDecimal getTotal() {
 		return getSubtotal().add(shippingCost);
 	}

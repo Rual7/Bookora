@@ -72,4 +72,8 @@ public class Product extends BaseEntity {
 		stockQuantity -= quantity;
 	}
 
+	public void restoreStock(int quantity) {
+		stockQuantity += quantity;
+	}
+
 }
