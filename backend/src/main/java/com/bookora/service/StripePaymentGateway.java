@@ -3,6 +3,7 @@ package com.bookora.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -57,7 +58,7 @@ public class StripePaymentGateway implements PaymentGateway {
 				.putMetadata("orderNumber", order.getOrderNumber());
 
 		for (OrderItem item : order.getItems()) {
-			String name = item.getProductTitle() + " (" + item.getProductFormat().name().toLowerCase() + ")";
+			String name = item.getProductTitle() + " (" + item.getProductFormat().name().toLowerCase(Locale.ROOT) + ")";
 			params.addLineItem(lineItem(name, item.getUnitPrice(), item.getQuantity(), order.getCurrency()));
 		}
 		if (order.getShippingCost().signum() > 0) {
@@ -67,7 +68,7 @@ public class StripePaymentGateway implements PaymentGateway {
 		try {
 			com.stripe.model.checkout.Session session = com.stripe.model.checkout.Session.create(params.build(), options());
 			return new PaymentGateway.Session(session.getId(), session.getUrl());
-		} catch (StripeException problem) {
+		} catch (StripeException _) {
 			throw new ServiceUnavailableException("The payment service is not available right now. Please try again.");
 		}
 	}
@@ -77,7 +78,7 @@ public class StripePaymentGateway implements PaymentGateway {
 		try {
 			com.stripe.model.checkout.Session session = com.stripe.model.checkout.Session.retrieve(sessionId, options());
 			return "open".equals(session.getStatus()) ? Optional.ofNullable(session.getUrl()) : Optional.empty();
-		} catch (StripeException problem) {
+		} catch (StripeException _) {
 			return Optional.empty();
 		}
 	}
@@ -89,7 +90,7 @@ public class StripePaymentGateway implements PaymentGateway {
 		}
 		try {
 			Webhook.Signature.verifyHeader(payload, signatureHeader, webhookSecret, SIGNATURE_TOLERANCE_SECONDS);
-		} catch (SignatureVerificationException | RuntimeException problem) {
+		} catch (SignatureVerificationException | RuntimeException _) {
 			throw new BadRequestException("Invalid signature");
 		}
 
@@ -104,7 +105,7 @@ public class StripePaymentGateway implements PaymentGateway {
 		return SessionCreateParams.LineItem.builder()
 				.setQuantity((long) quantity)
 				.setPriceData(SessionCreateParams.LineItem.PriceData.builder()
-						.setCurrency(currency.toLowerCase())
+						.setCurrency(currency.toLowerCase(Locale.ROOT))
 						.setUnitAmount(unitPrice.movePointRight(2).setScale(0, RoundingMode.HALF_UP).longValueExact())
 						.setProductData(SessionCreateParams.LineItem.PriceData.ProductData.builder().setName(name).build())
 						.build())

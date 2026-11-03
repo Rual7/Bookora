@@ -94,7 +94,7 @@ public class CoverStorage {
 	private static byte[] readBytes(MultipartFile upload) {
 		try {
 			return upload.getBytes();
-		} catch (IOException e) {
+		} catch (IOException _) {
 			throw new BadRequestException("The file could not be read");
 		}
 	}
@@ -115,7 +115,7 @@ public class CoverStorage {
 			} finally {
 				reader.dispose();
 			}
-		} catch (IOException e) {
+		} catch (IOException _) {
 			throw new BadRequestException("The cover must be a JPG or PNG image");
 		}
 	}

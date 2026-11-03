@@ -3,8 +3,6 @@ package com.bookora.service;
 import java.time.Year;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,14 +52,14 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public OrderDto checkout(String email, Long addressId) {
 		// Locking the user makes a double click on "Place order" wait, then find an empty cart.
-		AppUser user = users.findAndLockByEmail(email)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found"));
+		AppUser user = users.requireAndLockByEmail(email);
 		Cart cart = carts.findByUserId(user.getId()).orElse(null);
 		if (cart == null || cart.getItems().isEmpty()) {
 			throw new BadRequestException("Your cart is empty");
 		}
 
-		Map<Long, Product> locked = lockProducts(cart);
+		List<Long> productIds = cart.getItems().stream().map(item -> item.getProduct().getId()).toList();
+		Map<Long, Product> locked = products.lockAllById(productIds);
 		boolean needsShipping = false;
 		for (CartItem item : cart.getItems()) {
 			Product product = locked.get(item.getProduct().getId());
@@ -90,27 +88,18 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<OrderDto> list(String email) {
-		AppUser user = findUser(email);
+		AppUser user = users.requireByEmail(email);
 		return orders.findByUserIdOrderByCreatedAtDesc(user.getId()).stream().map(OrderServiceImpl::toDto).toList();
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public OrderDto get(String email, String orderNumber) {
-		AppUser user = findUser(email);
+		AppUser user = users.requireByEmail(email);
 		// Looking up by user as well means another customer's order number is simply "not found".
 		return orders.findByOrderNumberAndUserId(orderNumber, user.getId())
 				.map(OrderServiceImpl::toDto)
 				.orElseThrow(() -> new ResourceNotFoundException("Order not found"));
-	}
-
-	private AppUser findUser(String email) {
-		return users.findByEmailIgnoreCase(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
-	}
-
-	private Map<Long, Product> lockProducts(Cart cart) {
-		List<Long> ids = cart.getItems().stream().map(item -> item.getProduct().getId()).toList();
-		return products.findAllForUpdate(ids).stream().collect(Collectors.toMap(Product::getId, Function.identity()));
 	}
 
 	private void checkAvailable(Product product, int quantity) {

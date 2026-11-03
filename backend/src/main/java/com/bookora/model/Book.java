@@ -111,7 +111,7 @@ public class Book extends BaseEntity {
 			return false;
 		}
 		images.remove(image);
-		images.add(0, image);
+		images.addFirst(image);
 		renumber();
 		return true;
 	}
@@ -128,7 +128,7 @@ public class Book extends BaseEntity {
 	}
 
 	private void syncCover() {
-		coverImagePath = images.isEmpty() ? null : images.get(0).getPath();
+		coverImagePath = images.isEmpty() ? null : images.getFirst().getPath();
 	}
 
 	public String getTitle() {
@@ -169,6 +169,10 @@ public class Book extends BaseEntity {
 
 	public boolean isActive() {
 		return active;
+	}
+
+	public List<String> getAuthorNames() {
+		return authors.stream().map(Author::getName).toList();
 	}
 
 	public Set<Author> getAuthors() {

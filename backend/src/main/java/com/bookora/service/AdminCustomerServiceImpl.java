@@ -1,8 +1,8 @@
 package com.bookora.service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -15,6 +15,7 @@ import com.bookora.exception.BadRequestException;
 import com.bookora.exception.ResourceNotFoundException;
 import com.bookora.model.AppUser;
 import com.bookora.model.Role;
+import com.bookora.repository.OrderCount;
 import com.bookora.repository.OrderRepository;
 import com.bookora.repository.UserRepository;
 
@@ -33,8 +34,8 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
 	@Transactional(readOnly = true)
 	public PageDto<AdminCustomerDto> list(int page, int size) {
 		var found = users.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
-		Map<Long, Integer> orderCounts = countOrders(found.getContent());
-		return PageDto.of(found.map(user -> toDto(user, orderCounts.getOrDefault(user.getId(), 0))));
+		Map<Long, Long> orderCounts = countOrders(found.getContent());
+		return PageDto.of(found.map(user -> toDto(user, orderCounts.getOrDefault(user.getId(), 0L))));
 	}
 
 	@Override
@@ -45,22 +46,20 @@ public class AdminCustomerServiceImpl implements AdminCustomerService {
 			throw new BadRequestException("Administrator accounts cannot be changed here");
 		}
 		user.setEnabled(enabled);
-		return toDto(user, countOrders(List.of(user)).getOrDefault(id, 0));
+		return toDto(user, countOrders(List.of(user)).getOrDefault(id, 0L));
 	}
 
-	private Map<Long, Integer> countOrders(List<AppUser> customers) {
-		Map<Long, Integer> counts = new HashMap<>();
-		if (!customers.isEmpty()) {
-			for (Object[] row : orders.countByUsers(customers.stream().map(AppUser::getId).toList())) {
-				counts.put((Long) row[0], ((Long) row[1]).intValue());
-			}
+	private Map<Long, Long> countOrders(List<AppUser> customers) {
+		if (customers.isEmpty()) {
+			return Map.of();
 		}
-		return counts;
+		return orders.countByUsers(customers.stream().map(AppUser::getId).toList()).stream()
+				.collect(Collectors.toMap(OrderCount::userId, OrderCount::count));
 	}
 
-	private static AdminCustomerDto toDto(AppUser user, int orderCount) {
-		return new AdminCustomerDto(user.getId(), user.getFirstName() + " " + user.getLastName(), user.getEmail(),
-				user.getRole(), user.isEnabled(), orderCount, user.getCreatedAt());
+	private static AdminCustomerDto toDto(AppUser user, long orderCount) {
+		return new AdminCustomerDto(user.getId(), user.getFullName(), user.getEmail(), user.getRole(), user.isEnabled(),
+				(int) orderCount, user.getCreatedAt());
 	}
 
 }

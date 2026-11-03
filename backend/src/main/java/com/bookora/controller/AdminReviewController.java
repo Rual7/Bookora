@@ -22,8 +22,6 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/admin/reviews")
 public class AdminReviewController {
 
-	private static final int PAGE_SIZE = 20;
-
 	private final AdminReviewService reviewService;
 	private final AdminAudit audit;
 
@@ -35,7 +33,7 @@ public class AdminReviewController {
 	@GetMapping
 	public PageDto<AdminReviewDto> list(@RequestParam(defaultValue = "PENDING") ReviewStatus status,
 			@RequestParam(defaultValue = "0") int page) {
-		return reviewService.list(status, Math.max(page, 0), PAGE_SIZE);
+		return reviewService.list(status, AdminPaging.page(page), AdminPaging.PAGE_SIZE);
 	}
 
 	@PutMapping("/{id}/status")

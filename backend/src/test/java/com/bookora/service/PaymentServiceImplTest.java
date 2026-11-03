@@ -63,6 +63,7 @@ class PaymentServiceImplTest {
 		lenient().when(user.getId()).thenReturn(1L);
 		lenient().when(gateway.isConfigured()).thenReturn(true);
 		lenient().when(users.findByEmailIgnoreCase(EMAIL)).thenReturn(Optional.of(user));
+		lenient().when(users.requireByEmail(EMAIL)).thenCallRealMethod();
 		lenient().when(orders.findByOrderNumberAndUserId(NUMBER, 1L)).thenReturn(Optional.of(order));
 	}
 

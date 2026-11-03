@@ -43,7 +43,6 @@ public class AuthController {
 
 	private final AuthenticationManager authenticationManager;
 	private final UserService userService;
-
 	private final CaptchaService captcha;
 
 	public AuthController(AuthenticationManager authenticationManager, UserService userService, CaptchaService captcha) {

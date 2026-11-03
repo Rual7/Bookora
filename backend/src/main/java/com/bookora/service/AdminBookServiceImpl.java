@@ -133,8 +133,8 @@ public class AdminBookServiceImpl implements AdminBookService {
 	}
 
 	private void apply(Book book, AdminBookRequest request) {
-		book.update(request.title().trim(), blankToNull(request.description()), blankToNull(request.publisher()),
-				request.publishedOn(), blankToNull(request.languageCode()), request.pageCount(), request.featured(),
+		book.update(request.title().trim(), Text.trimToNull(request.description()), Text.trimToNull(request.publisher()),
+				request.publishedOn(), Text.trimToNull(request.languageCode()), request.pageCount(), request.featured(),
 				request.active());
 
 		book.getAuthors().clear();
@@ -175,7 +175,7 @@ public class AdminBookServiceImpl implements AdminBookService {
 			if (added) {
 				product = new Product(book, "BK-" + book.getId() + "-" + item.format().name(), item.format());
 			}
-			String isbn = blankToNull(item.isbn());
+			String isbn = Text.trimToNull(item.isbn());
 			checkIsbnIsFree(isbn, product, "products[" + index + "].isbn");
 			product.update(isbn, item.price(), item.stockQuantity(), item.active());
 			if (added) {
@@ -217,7 +217,7 @@ public class AdminBookServiceImpl implements AdminBookService {
 				.sorted()
 				.toList();
 		return new AdminBookRowDto(book.getId(), book.getTitle(), book.getSlug(), book.getCoverImagePath(),
-				book.getAuthors().stream().map(Author::getName).toList(), formats, book.isFeatured(), book.isActive());
+				book.getAuthorNames(), formats, book.isFeatured(), book.isActive());
 	}
 
 	private AdminBookDto toDto(Book book) {
@@ -234,16 +234,12 @@ public class AdminBookServiceImpl implements AdminBookService {
 		return new AdminBookDto(book.getId(), book.getTitle(), book.getSlug(), book.getDescription(),
 				book.getPublisher(), book.getPublishedOn(), book.getLanguageCode(), book.getPageCount(),
 				book.isFeatured(), book.isActive(), book.getCoverImagePath(), images,
-				book.getAuthors().stream().map(Author::getName).toList(),
+				book.getAuthorNames(),
 				book.getCategories().stream().map(Category::getId).toList(), productDtos);
 	}
 
 	private static EbookFileDto toDto(EbookFile file) {
 		return file == null ? null : new EbookFileDto(file.getOriginalFilename(), file.getFileSizeBytes(), file.getScanStatus());
-	}
-
-	private static String blankToNull(String text) {
-		return text == null || text.isBlank() ? null : text.trim();
 	}
 
 }

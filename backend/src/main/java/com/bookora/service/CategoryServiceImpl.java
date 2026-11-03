@@ -20,9 +20,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	public List<CategoryDto> findAll() {
-		return categories.findAllByOrderByIdAsc().stream()
-				.map(c -> new CategoryDto(c.getId(), c.getName(), c.getSlug(), c.getDescription()))
-				.toList();
+		return categories.findAllByOrderByIdAsc().stream().map(CategoryDto::from).toList();
 	}
 
 }

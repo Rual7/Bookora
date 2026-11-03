@@ -19,8 +19,6 @@ import com.bookora.service.AdminCustomerService;
 @RequestMapping("/api/admin/customers")
 public class AdminCustomerController {
 
-	private static final int PAGE_SIZE = 20;
-
 	private final AdminCustomerService customerService;
 	private final AdminAudit audit;
 
@@ -31,7 +29,7 @@ public class AdminCustomerController {
 
 	@GetMapping
 	public PageDto<AdminCustomerDto> list(@RequestParam(defaultValue = "0") int page) {
-		return customerService.list(Math.max(page, 0), PAGE_SIZE);
+		return customerService.list(AdminPaging.page(page), AdminPaging.PAGE_SIZE);
 	}
 
 	@PutMapping("/{id}/enabled")

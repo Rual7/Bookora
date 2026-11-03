@@ -30,8 +30,6 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/admin/books")
 public class AdminBookController {
 
-	private static final int PAGE_SIZE = 20;
-
 	private final AdminBookService bookService;
 	private final EbookService ebookService;
 	private final AdminAudit audit;
@@ -45,7 +43,7 @@ public class AdminBookController {
 	@GetMapping
 	public PageDto<AdminBookRowDto> list(@RequestParam(required = false) String q,
 			@RequestParam(defaultValue = "0") int page) {
-		return bookService.list(q, Math.max(page, 0), PAGE_SIZE);
+		return bookService.list(q, AdminPaging.page(page), AdminPaging.PAGE_SIZE);
 	}
 
 	@GetMapping("/{id}")

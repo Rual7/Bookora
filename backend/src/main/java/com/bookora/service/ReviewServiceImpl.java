@@ -33,15 +33,13 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	@Transactional
 	public void submit(String email, String bookSlug, ReviewRequest request) {
-		AppUser user = users.findByEmailIgnoreCase(email)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found"));
+		AppUser user = users.requireByEmail(email);
 		Book book = books.findBySlugAndActiveTrue(bookSlug)
 				.orElseThrow(() -> new ResourceNotFoundException("Book not found"));
 		if (reviews.existsByUserIdAndBookId(user.getId(), book.getId())) {
 			throw new ConflictException("You have already reviewed this book");
 		}
-		String title = request.title() == null || request.title().isBlank() ? null : request.title().trim();
-		reviews.save(new Review(user, book, request.rating(), title, request.comment().trim()));
+		reviews.save(new Review(user, book, request.rating(), Text.trimToNull(request.title()), request.comment().trim()));
 		log.info("Review submitted: userId={}, bookId={}", user.getId(), book.getId());
 	}
 

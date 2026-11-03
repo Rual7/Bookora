@@ -45,7 +45,7 @@ public class EbookScanner {
 				}
 			}
 			return true;
-		} catch (IOException e) {
+		} catch (IOException _) {
 			return false;
 		}
 	}

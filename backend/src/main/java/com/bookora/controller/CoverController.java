@@ -35,7 +35,6 @@ public class CoverController {
 				.contentType(MediaType.IMAGE_JPEG)
 				.contentLength(Files.size(file))
 				.cacheControl(CacheControl.maxAge(Duration.ofDays(30)).cachePublic().immutable())
-				.header("X-Content-Type-Options", "nosniff")
 				.body(new FileSystemResource(file));
 	}
 

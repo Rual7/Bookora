@@ -42,7 +42,7 @@ public class AdminReviewServiceImpl implements AdminReviewService {
 		AppUser author = review.getUser();
 		boolean bought = orders.hasBought(author.getId(), review.getBook().getId());
 		return new AdminReviewDto(review.getId(), review.getBook().getTitle(), review.getBook().getSlug(),
-				author.getFirstName() + " " + author.getLastName(), author.getEmail(), review.getRating(),
+				author.getFullName(), author.getEmail(), review.getRating(),
 				review.getTitle(), review.getComment(), review.getStatus(), bought, review.getCreatedAt());
 	}
 

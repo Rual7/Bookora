@@ -52,7 +52,7 @@ final class FileChecks {
 			}
 			String content = new String(zip.readNBytes(64), StandardCharsets.US_ASCII);
 			return content.equals("application/epub+zip");
-		} catch (IOException e) {
+		} catch (IOException _) {
 			return false;
 		}
 	}

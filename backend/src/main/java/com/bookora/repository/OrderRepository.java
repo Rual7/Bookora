@@ -61,8 +61,11 @@ public interface OrderRepository extends JpaRepository<CustomerOrder, Long> {
 			""")
 	boolean hasBought(@Param("userId") Long userId, @Param("bookId") Long bookId);
 
-	@Query("select o.user.id, count(o) from CustomerOrder o where o.user.id in :userIds group by o.user.id")
-	List<Object[]> countByUsers(@Param("userIds") Collection<Long> userIds);
+	@Query("""
+			select new com.bookora.repository.OrderCount(o.user.id, count(o)) from CustomerOrder o
+			where o.user.id in :userIds group by o.user.id
+			""")
+	List<OrderCount> countByUsers(@Param("userIds") Collection<Long> userIds);
 
 	Page<CustomerOrder> findByStatusOrderByCreatedAtDesc(OrderStatus status, Pageable pageable);
 

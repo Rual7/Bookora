@@ -13,7 +13,6 @@ import com.bookora.dto.BookSummaryDto.Availability;
 import com.bookora.dto.CategoryDto;
 import com.bookora.dto.ProductDto;
 import com.bookora.dto.ReviewDto;
-import com.bookora.model.Author;
 import com.bookora.model.Book;
 import com.bookora.model.BookImage;
 import com.bookora.model.Product;
@@ -40,13 +39,11 @@ public class BookMapper {
 				.min(Comparator.naturalOrder())
 				.orElse(null);
 		return new BookSummaryDto(book.getId(), book.getTitle(), book.getSlug(), book.getCoverImagePath(),
-				authorNames(book), price, CURRENCY, availability(products));
+				book.getAuthorNames(), price, CURRENCY, availability(products));
 	}
 
 	public BookDetailDto toDetail(Book book, RatingSummary rating, List<Review> reviews, Set<Long> buyerIds) {
-		List<CategoryDto> categories = book.getCategories().stream()
-				.map(c -> new CategoryDto(c.getId(), c.getName(), c.getSlug(), c.getDescription()))
-				.toList();
+		List<CategoryDto> categories = book.getCategories().stream().map(CategoryDto::from).toList();
 		List<ProductDto> products = activeProducts(book).stream()
 				.map(p -> new ProductDto(p.getId(), p.getSku(), p.getFormat(), p.getIsbn(), p.getPrice(), CURRENCY,
 						p.getFormat().isDigital() || p.getStockQuantity() > 0))
@@ -58,7 +55,7 @@ public class BookMapper {
 		return new BookDetailDto(book.getId(), book.getTitle(), book.getSlug(), book.getDescription(),
 				book.getCoverImagePath(), book.getImages().stream().map(BookImage::getPath).toList(),
 				book.getPublisher(), book.getPublishedOn(), book.getLanguageCode(),
-				book.getPageCount(), authorNames(book), categories, products,
+				book.getPageCount(), book.getAuthorNames(), categories, products,
 				rating == null ? null : rating.getAverageRating(),
 				rating == null ? 0 : rating.getReviewCount(), reviewDtos);
 	}
@@ -68,10 +65,6 @@ public class BookMapper {
 				.filter(Product::isActive)
 				.sorted(Comparator.comparing(Product::getPrice))
 				.toList();
-	}
-
-	private List<String> authorNames(Book book) {
-		return book.getAuthors().stream().map(Author::getName).toList();
 	}
 
 	private Availability availability(List<Product> products) {

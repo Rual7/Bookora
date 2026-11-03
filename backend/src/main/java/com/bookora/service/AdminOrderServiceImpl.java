@@ -13,6 +13,7 @@ import com.bookora.exception.ConflictException;
 import com.bookora.exception.ResourceNotFoundException;
 import com.bookora.model.AppUser;
 import com.bookora.model.CustomerOrder;
+import com.bookora.model.OrderItem;
 import com.bookora.model.OrderStatus;
 import com.bookora.repository.OrderRepository;
 
@@ -77,18 +78,14 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
 	private static AdminOrderRowDto toRow(CustomerOrder order) {
 		AppUser customer = order.getUser();
-		int itemCount = order.getItems().stream().mapToInt(item -> item.getQuantity()).sum();
-		return new AdminOrderRowDto(order.getOrderNumber(), name(customer), customer.getEmail(), order.getStatus(),
-				order.getCreatedAt(), itemCount, order.getTotal(), order.getCurrency());
+		int itemCount = order.getItems().stream().mapToInt(OrderItem::getQuantity).sum();
+		return new AdminOrderRowDto(order.getOrderNumber(), customer.getFullName(), customer.getEmail(),
+				order.getStatus(), order.getCreatedAt(), itemCount, order.getTotal(), order.getCurrency());
 	}
 
 	private static AdminOrderDto toDto(CustomerOrder order) {
 		OrderDto dto = OrderServiceImpl.toDto(order);
-		return new AdminOrderDto(dto, name(order.getUser()), order.getUser().getEmail());
-	}
-
-	private static String name(AppUser user) {
-		return user.getFirstName() + " " + user.getLastName();
+		return new AdminOrderDto(dto, order.getUser().getFullName(), order.getUser().getEmail());
 	}
 
 }

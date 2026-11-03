@@ -19,8 +19,6 @@ import com.bookora.service.AdminMessageService;
 @RequestMapping("/api/admin/messages")
 public class AdminMessageController {
 
-	private static final int PAGE_SIZE = 20;
-
 	private final AdminMessageService messageService;
 	private final AdminAudit audit;
 
@@ -31,7 +29,7 @@ public class AdminMessageController {
 
 	@GetMapping
 	public PageDto<AdminMessageDto> list(@RequestParam(defaultValue = "0") int page) {
-		return messageService.list(Math.max(page, 0), PAGE_SIZE);
+		return messageService.list(AdminPaging.page(page), AdminPaging.PAGE_SIZE);
 	}
 
 	@PutMapping("/{id}/handled")

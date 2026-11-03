@@ -39,7 +39,7 @@ public class WishlistServiceImpl implements WishlistService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<BookSummaryDto> list(String email) {
-		return wishlist.findByIdUserId(findUser(email).getId()).stream()
+		return wishlist.findByIdUserId(users.requireByEmail(email).getId()).stream()
 				.map(WishlistItem::getBook)
 				.filter(Book::isActive)
 				.map(mapper::toSummary)
@@ -48,7 +48,7 @@ public class WishlistServiceImpl implements WishlistService {
 
 	@Override
 	public void add(String email, Long bookId) {
-		AppUser user = findUser(email);
+		AppUser user = users.requireByEmail(email);
 		if (wishlist.existsById(new WishlistItemId(user.getId(), bookId))) {
 			return;
 		}
@@ -61,14 +61,9 @@ public class WishlistServiceImpl implements WishlistService {
 
 	@Override
 	public void remove(String email, Long bookId) {
-		AppUser user = findUser(email);
+		AppUser user = users.requireByEmail(email);
 		wishlist.deleteById(new WishlistItemId(user.getId(), bookId));
 		log.info("Wishlist book removed: userId={}, bookId={}", user.getId(), bookId);
-	}
-
-	private AppUser findUser(String email) {
-		return users.findByEmailIgnoreCase(email)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found"));
 	}
 
 }

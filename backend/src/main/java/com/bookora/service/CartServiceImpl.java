@@ -50,7 +50,7 @@ public class CartServiceImpl implements CartService {
 
 	@Override
 	public CartDto getCart(String email) {
-		return toDto(linesOf(findOrCreateCart(email)));
+		return toDto(linesOf(cartOf(lockUser(email))));
 	}
 
 	@Override
@@ -117,13 +117,9 @@ public class CartServiceImpl implements CartService {
 		return toDto(lines);
 	}
 
-	private Cart findOrCreateCart(String email) {
-		return cartOf(lockUser(email));
-	}
-
 	/** Locking the user makes simultaneous requests wait, so a first cart is never created twice. */
 	private AppUser lockUser(String email) {
-		return users.findAndLockByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+		return users.requireAndLockByEmail(email);
 	}
 
 	private Cart cartOf(AppUser user) {
@@ -178,7 +174,7 @@ public class CartServiceImpl implements CartService {
 		Book book = product.getBook();
 		BigDecimal lineTotal = product.getPrice().multiply(BigDecimal.valueOf(line.quantity()));
 		return new CartItemDto(product.getId(), book.getId(), book.getSlug(), book.getTitle(),
-				book.getAuthors().stream().map(a -> a.getName()).toList(), book.getCoverImagePath(),
+				book.getAuthorNames(), book.getCoverImagePath(),
 				product.getFormat(), product.getPrice(), line.quantity(), lineTotal, maxQuantity(product));
 	}
 

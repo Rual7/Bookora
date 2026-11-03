@@ -32,14 +32,14 @@ public class AddressServiceImpl implements AddressService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<AddressDto> list(String email) {
-		return addresses.findByUserIdOrderByDefaultAddressDescIdAsc(findUser(email).getId()).stream()
+		return addresses.findByUserIdOrderByDefaultAddressDescIdAsc(users.requireByEmail(email).getId()).stream()
 				.map(AddressServiceImpl::toDto)
 				.toList();
 	}
 
 	@Override
 	public AddressDto create(String email, AddressRequest request) {
-		AppUser user = findUser(email);
+		AppUser user = users.requireByEmail(email);
 		List<Address> saved = addresses.findByUserIdOrderByDefaultAddressDescIdAsc(user.getId());
 
 		Address address = new Address(user);
@@ -55,7 +55,7 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	public AddressDto update(String email, Long addressId, AddressRequest request) {
-		AppUser user = findUser(email);
+		AppUser user = users.requireByEmail(email);
 		Address address = findOwned(user, addressId);
 
 		copyFields(address, request);
@@ -68,7 +68,7 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	public void delete(String email, Long addressId) {
-		AppUser user = findUser(email);
+		AppUser user = users.requireByEmail(email);
 		Address address = findOwned(user, addressId);
 		addresses.delete(address);
 		log.info("Address deleted: userId={}, addressId={}", user.getId(), addressId);
@@ -79,10 +79,6 @@ public class AddressServiceImpl implements AddressService {
 					.findFirst()
 					.ifPresent(other -> other.setDefaultAddress(true));
 		}
-	}
-
-	private AppUser findUser(String email) {
-		return users.findByEmailIgnoreCase(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 	}
 
 	private Address findOwned(AppUser user, Long addressId) {
@@ -96,19 +92,15 @@ public class AddressServiceImpl implements AddressService {
 	}
 
 	private void copyFields(Address address, AddressRequest request) {
-		address.setLabel(blankToNull(request.label()));
+		address.setLabel(Text.trimToNull(request.label()));
 		address.setRecipientName(request.recipientName().trim());
 		address.setPhone(request.phone().trim());
 		address.setCountry(request.country().trim());
 		address.setCity(request.city().trim());
-		address.setCountyRegion(blankToNull(request.countyRegion()));
+		address.setCountyRegion(Text.trimToNull(request.countyRegion()));
 		address.setPostalCode(request.postalCode().trim());
 		address.setStreetAddress(request.streetAddress().trim());
-		address.setBuildingDetails(blankToNull(request.buildingDetails()));
-	}
-
-	private static String blankToNull(String value) {
-		return value == null || value.isBlank() ? null : value.trim();
+		address.setBuildingDetails(Text.trimToNull(request.buildingDetails()));
 	}
 
 	private static AddressDto toDto(Address a) {

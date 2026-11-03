@@ -58,8 +58,7 @@ public class PaymentServiceImpl implements PaymentService {
 		if (!gateway.isConfigured()) {
 			throw new ServiceUnavailableException("Online payment is not set up yet.");
 		}
-		AppUser user = users.findByEmailIgnoreCase(email)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found"));
+		AppUser user = users.requireByEmail(email);
 		CustomerOrder order = orders.findByOrderNumberAndUserId(orderNumber, user.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 		if (order.getStatus() != OrderStatus.PENDING_PAYMENT) {

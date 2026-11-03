@@ -35,7 +35,7 @@ public class BookController {
 			@RequestParam(defaultValue = "title") String sort,
 			@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "12") int size) {
-		int safeSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
+		int safeSize = Math.clamp(size, 1, MAX_PAGE_SIZE);
 		return bookService.search(q, category, format, BookSort.from(sort),
 				PageRequest.of(Math.max(page, 0), safeSize));
 	}
@@ -47,7 +47,7 @@ public class BookController {
 
 	@GetMapping("/by-ids")
 	public List<BookSummaryDto> byIds(@RequestParam List<Long> ids) {
-		return bookService.findByIds(ids.size() > MAX_PAGE_SIZE * 2 ? ids.subList(0, MAX_PAGE_SIZE * 2) : ids);
+		return bookService.findByIds(ids.stream().limit(MAX_PAGE_SIZE * 2).toList());
 	}
 
 	@GetMapping("/{slug}")

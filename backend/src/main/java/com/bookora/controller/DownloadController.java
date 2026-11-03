@@ -43,7 +43,6 @@ public class DownloadController {
 		return ResponseEntity.ok()
 				.contentType(MediaType.parseMediaType(download.mimeType()))
 				.header(HttpHeaders.CONTENT_DISPOSITION, disposition.toString())
-				.header("X-Content-Type-Options", "nosniff")
 				.header(HttpHeaders.CACHE_CONTROL, "private, no-store")
 				.body(new FileSystemResource(download.path()));
 	}

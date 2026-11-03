@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.bookora.dto.RegisterRequest;
 import com.bookora.dto.UserDto;
 import com.bookora.exception.ConflictException;
-import com.bookora.exception.ResourceNotFoundException;
 import com.bookora.model.AppUser;
 import com.bookora.repository.UserRepository;
 
@@ -44,9 +43,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional(readOnly = true)
 	public UserDto getByEmail(String email) {
-		return users.findByEmailIgnoreCase(email)
-				.map(UserServiceImpl::toDto)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found"));
+		return toDto(users.requireByEmail(email));
 	}
 
 	private static UserDto toDto(AppUser user) {

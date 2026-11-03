@@ -17,7 +17,7 @@ public enum BookSort {
 		}
 		try {
 			return valueOf(value.trim().toUpperCase(Locale.ROOT).replace('-', '_'));
-		} catch (IllegalArgumentException unknown) {
+		} catch (IllegalArgumentException _) {
 			return TITLE;
 		}
 	}

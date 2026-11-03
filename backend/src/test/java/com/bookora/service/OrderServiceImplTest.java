@@ -63,6 +63,8 @@ class OrderServiceImplTest {
 		cart = new Cart(user);
 		lenient().when(user.getId()).thenReturn(1L);
 		lenient().when(users.findAndLockByEmail(EMAIL)).thenReturn(Optional.of(user));
+		lenient().when(users.requireAndLockByEmail(EMAIL)).thenCallRealMethod();
+		lenient().when(products.lockAllById(any())).thenCallRealMethod();
 		lenient().when(carts.findByUserId(1L)).thenReturn(Optional.of(cart));
 		lenient().when(orders.save(any(CustomerOrder.class))).thenAnswer(call -> call.getArgument(0));
 	}

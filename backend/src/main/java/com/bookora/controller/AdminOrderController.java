@@ -23,8 +23,6 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/admin/orders")
 public class AdminOrderController {
 
-	private static final int PAGE_SIZE = 20;
-
 	private final AdminOrderService orderService;
 	private final AdminAudit audit;
 
@@ -36,7 +34,7 @@ public class AdminOrderController {
 	@GetMapping
 	public PageDto<AdminOrderRowDto> list(@RequestParam(required = false) OrderStatus status,
 			@RequestParam(defaultValue = "0") int page) {
-		return orderService.list(status, Math.max(page, 0), PAGE_SIZE);
+		return orderService.list(status, AdminPaging.page(page), AdminPaging.PAGE_SIZE);
 	}
 
 	@GetMapping("/{orderNumber}")

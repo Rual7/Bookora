@@ -65,6 +65,10 @@ public class AppUser extends BaseEntity {
 		return lastName;
 	}
 
+	public String getFullName() {
+		return firstName + " " + lastName;
+	}
+
 	public Role getRole() {
 		return role;
 	}
