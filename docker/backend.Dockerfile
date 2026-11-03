@@ -8,7 +8,7 @@ RUN ./mvnw -B -DskipTests package
 
 FROM eclipse-temurin:25-jre
 WORKDIR /app
-RUN useradd --system bookora && mkdir -p /app/logs /app/storage && chown -R bookora /app
+RUN useradd --system bookora && mkdir -p /app/logs /app/storage/ebooks /app/storage/covers && chown -R bookora /app
 COPY --from=build /app/target/bookora-backend-*.jar app.jar
 USER bookora
 EXPOSE 8080

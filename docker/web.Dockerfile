@@ -3,6 +3,8 @@ WORKDIR /app
 COPY frontend/package*.json ./
 RUN npm ci
 COPY frontend ./
+# the public CAPTCHA key is baked into the page at build time
+ARG VITE_TURNSTILE_SITE_KEY
 RUN npm run build
 
 FROM httpd:2.4
