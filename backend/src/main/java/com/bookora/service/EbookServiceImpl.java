@@ -21,11 +21,9 @@ import com.bookora.exception.BadRequestException;
 import com.bookora.exception.ConflictException;
 import com.bookora.exception.ResourceNotFoundException;
 import com.bookora.model.AppUser;
-import com.bookora.model.Author;
 import com.bookora.model.EbookDownload;
 import com.bookora.model.EbookFile;
 import com.bookora.model.OrderItem;
-import com.bookora.model.OrderStatus;
 import com.bookora.model.Product;
 import com.bookora.model.ProductFormat;
 import com.bookora.model.ScanStatus;
@@ -41,7 +39,6 @@ public class EbookServiceImpl implements EbookService {
 	private static final Logger log = LoggerFactory.getLogger(EbookServiceImpl.class);
 
 	private static final long MAX_BYTES = 12L * 1024 * 1024;
-	private static final Set<OrderStatus> PAID_STATUSES = Set.of(OrderStatus.PAID, OrderStatus.SHIPPED, OrderStatus.DELIVERED);
 
 	private final ProductRepository products;
 	private final EbookFileRepository ebookFiles;
@@ -69,20 +66,35 @@ public class EbookServiceImpl implements EbookService {
 		Product product = products.findById(productId)
 				.filter(p -> p.getBook().getId().equals(bookId))
 				.orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+		return store(product, file.getOriginalFilename(), readBytes(file));
+	}
+
+	@Override
+	@Transactional
+	public EbookFileDto attach(Long productId, String filename, byte[] content) {
+		Product product = products.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+		return store(product, filename, content);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public boolean hasStoredFile(Long productId) {
+		return ebookFiles.findByProductId(productId).map(file -> storage.exists(file.getStorageKey())).orElse(false);
+	}
+
+	private EbookFileDto store(Product product, String filename, byte[] content) {
 		if (!product.getFormat().isDigital()) {
 			throw new BadRequestException("Only an e-book product can have a file");
 		}
-
-		byte[] content = readBytes(file);
-		checkFile(product.getFormat(), file.getOriginalFilename(), content);
+		checkFile(product.getFormat(), filename, content);
 
 		ScanStatus status = scanner.scan(product.getFormat(), content);
 		String key = storage.save(content);
-		String name = displayName(file.getOriginalFilename());
+		String name = displayName(filename);
 		String mimeType = mimeTypeOf(product.getFormat());
 		String hash = sha256(content);
 
-		EbookFile existing = ebookFiles.findByProductId(productId).orElse(null);
+		EbookFile existing = ebookFiles.findByProductId(product.getId()).orElse(null);
 		if (existing == null) {
 			existing = ebookFiles.save(new EbookFile(product, key, name, mimeType, content.length, hash, status));
 		} else {
@@ -90,15 +102,14 @@ public class EbookServiceImpl implements EbookService {
 			existing.replaceWith(key, name, mimeType, content.length, hash, status);
 			storage.delete(oldKey);
 		}
-		log.info("E-book stored: productId={}, size={}, scan={}", productId, content.length, status);
+		log.info("E-book stored: productId={}, size={}, scan={}", product.getId(), content.length, status);
 		return new EbookFileDto(existing.getOriginalFilename(), existing.getFileSizeBytes(), existing.getScanStatus());
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<LibraryItemDto> library(String email) {
-		AppUser user = users.findByEmailIgnoreCase(email)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found"));
+		AppUser user = users.requireByEmail(email);
 		List<OrderItem> items = orders.findPaidEbookItems(user.getId());
 		Set<Long> cleanProducts = ebookFiles
 				.findByProductIdIn(items.stream().map(i -> i.getProduct().getId()).toList()).stream()
@@ -108,7 +119,7 @@ public class EbookServiceImpl implements EbookService {
 		return items.stream()
 				.map(i -> new LibraryItemDto(i.getId(), i.getProductTitle(), i.getProduct().getBook().getSlug(),
 						i.getProduct().getBook().getCoverImagePath(),
-						i.getProduct().getBook().getAuthors().stream().map(Author::getName).toList(),
+						i.getProduct().getBook().getAuthorNames(),
 						i.getProductFormat(), i.getOrder().getPaidAt(),
 						cleanProducts.contains(i.getProduct().getId())))
 				.toList();
@@ -117,13 +128,12 @@ public class EbookServiceImpl implements EbookService {
 	@Override
 	@Transactional
 	public Download prepareDownload(String email, Long orderItemId) {
-		AppUser user = users.findByEmailIgnoreCase(email)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found"));
+		AppUser user = users.requireByEmail(email);
 		// An item of someone else's order is simply "not found".
 		OrderItem item = orders.findItemOfUser(orderItemId, user.getId())
 				.filter(i -> i.getProductFormat().isDigital())
 				.orElseThrow(() -> new ResourceNotFoundException("Download not found"));
-		if (!PAID_STATUSES.contains(item.getOrder().getStatus())) {
+		if (!item.getOrder().getStatus().isPaid()) {
 			throw new ConflictException("This order has not been paid");
 		}
 		EbookFile file = ebookFiles.findByProductId(item.getProduct().getId())
@@ -147,7 +157,7 @@ public class EbookServiceImpl implements EbookService {
 		}
 		try {
 			return file.getBytes();
-		} catch (IOException e) {
+		} catch (IOException _) {
 			throw new BadRequestException("The file could not be read");
 		}
 	}

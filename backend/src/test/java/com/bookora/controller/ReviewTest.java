@@ -10,9 +10,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpSession;
 
 import com.bookora.model.Product;
@@ -32,6 +34,15 @@ class ReviewTest extends ApiTestBase {
 
 	@Autowired
 	private OrderRepository orders;
+
+	@Autowired
+	private JdbcTemplate jdbc;
+
+	/** The demo data has reviews; each test starts without them, and the rollback brings them back. */
+	@BeforeEach
+	void startWithoutReviews() {
+		jdbc.update("DELETE FROM review");
+	}
 
 	private Product ebook() {
 		return products.findAll().stream().filter(p -> p.getFormat() == ProductFormat.EPUB).findFirst().orElseThrow();

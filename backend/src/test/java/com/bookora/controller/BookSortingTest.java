@@ -58,6 +58,8 @@ class BookSortingTest {
 
 	@Test
 	void ratingPutsTheBestReviewedBookFirstAndUnreviewedBooksLast() throws Exception {
+		// Start from a catalog without reviews, so only the two below decide the order.
+		jdbc.update("DELETE FROM review");
 		jdbc.update("INSERT INTO app_user (email, password_hash, first_name, last_name) "
 				+ "VALUES ('sort-test@example.com', 'x', 'Test', 'User')");
 		rate("frankenstein", 5);
@@ -71,10 +73,7 @@ class BookSortingTest {
 
 	@Test
 	void anUnknownSortFallsBackToTitleOrder() throws Exception {
-		List<String> titles = new ArrayList<>();
-		books("nonsense").forEach(book -> titles.add(book.get("title").asString()));
-
-		assertThat(titles).isSortedAccordingTo(String.CASE_INSENSITIVE_ORDER);
+		assertThat(books("nonsense")).isEqualTo(books("title"));
 	}
 
 	private void rate(String bookSlug, int rating) {

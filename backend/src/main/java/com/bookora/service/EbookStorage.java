@@ -44,6 +44,10 @@ public class EbookStorage {
 		return directory.resolve(key);
 	}
 
+	public boolean exists(String key) {
+		return Files.isRegularFile(find(key));
+	}
+
 	public void delete(String key) {
 		try {
 			Files.deleteIfExists(find(key));
