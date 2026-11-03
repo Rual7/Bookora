@@ -143,16 +143,27 @@ class EbookTest extends ApiTestBase {
 	}
 
 	@Test
-	void anEpubIsAcceptedAndOneWithAProgramIsRejected() throws Exception {
+	void aRefusedFileDoesNotReplaceTheOneThatWasThereBeforeAndIsReported() throws Exception {
 		MockHttpSession admin = adminSession();
 		createEbookProduct(admin, "EPUB");
-		upload(admin, "book.epub", epub(false), 200);
-		mvc.perform(get("/api/admin/books/" + bookId).session(admin))
-				.andExpect(jsonPath("$.products[0].ebook.scanStatus").value("CLEAN"));
+		mvc.perform(multipart("/api/admin/books/" + bookId + "/products/" + productId + "/ebook")
+				.file(new MockMultipartFile("file", "good.epub", "application/octet-stream", epub(false)))
+				.with(csrf()).session(admin))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.refused").doesNotExist())
+				.andExpect(jsonPath("$.book.products[0].ebook.scanStatus").value("CLEAN"));
 
-		upload(admin, "book.epub", epub(true), 200);
-		mvc.perform(get("/api/admin/books/" + bookId).session(admin))
-				.andExpect(jsonPath("$.products[0].ebook.scanStatus").value("REJECTED"));
+		mvc.perform(multipart("/api/admin/books/" + bookId + "/products/" + productId + "/ebook")
+				.file(new MockMultipartFile("file", "bad.epub", "application/octet-stream", epub(true)))
+				.with(csrf()).session(admin))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.refused.originalFilename").value("bad.epub"))
+				.andExpect(jsonPath("$.refused.scanStatus").value("REJECTED"))
+				.andExpect(jsonPath("$.book.products[0].ebook.originalFilename").value("good.epub"))
+				.andExpect(jsonPath("$.book.products[0].ebook.scanStatus").value("CLEAN"));
+
+		Object[] buyer = buy(true);
+		mvc.perform(get("/api/downloads/" + buyer[1]).session((MockHttpSession) buyer[0])).andExpect(status().isOk());
 	}
 
 	@Test

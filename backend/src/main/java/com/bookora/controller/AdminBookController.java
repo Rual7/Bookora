@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.bookora.dto.AdminBookDto;
 import com.bookora.dto.AdminBookRequest;
 import com.bookora.dto.AdminBookRowDto;
+import com.bookora.dto.EbookUploadDto;
 import com.bookora.dto.PageDto;
 import com.bookora.service.AdminAudit;
 import com.bookora.service.AdminBookService;
@@ -90,11 +91,11 @@ public class AdminBookController {
 	}
 
 	@PostMapping("/{id}/products/{productId}/ebook")
-	public AdminBookDto uploadEbook(@PathVariable Long id, @PathVariable Long productId,
+	public EbookUploadDto uploadEbook(@PathVariable Long id, @PathVariable Long productId,
 			@RequestParam("file") MultipartFile file, Authentication admin) {
-		ebookService.upload(id, productId, file);
-		audit.record(admin, "ebook.upload", productId);
-		return bookService.get(id);
+		EbookService.Upload upload = ebookService.upload(id, productId, file);
+		audit.record(admin, upload.keptPrevious() ? "ebook.upload.refused" : "ebook.upload", productId);
+		return new EbookUploadDto(bookService.get(id), upload.keptPrevious() ? upload.file() : null);
 	}
 
 }

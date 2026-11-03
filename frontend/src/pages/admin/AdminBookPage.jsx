@@ -30,6 +30,7 @@ function BookEditor({ book, categories, onChanged }) {
   const [saved, setSaved] = useState(false)
   const [busy, setBusy] = useState(false)
   const [imageProblem, setImageProblem] = useState('')
+  const [refused, setRefused] = useState({})
 
   function update(event) {
     const { name, type, checked, value } = event.target
@@ -72,8 +73,16 @@ function BookEditor({ book, categories, onChanged }) {
   async function upload(path, field, files) {
     const data = new FormData()
     files.forEach((file) => data.append(field, file))
-    await api.post(path, data)
+    const result = await api.post(path, data)
     onChanged()
+    return result
+  }
+
+  // A refused file is not stored, so the page remembers it just to show it under the file that was kept.
+  async function uploadEbook(product, files) {
+    setRefused((current) => ({ ...current, [product.id]: null }))
+    const { refused: rejected } = await upload(`/api/admin/books/${book.id}/products/${product.id}/ebook`, 'file', files.slice(0, 1))
+    setRefused((current) => ({ ...current, [product.id]: rejected }))
   }
 
   async function changeImages(request) {
@@ -194,9 +203,18 @@ function BookEditor({ book, categories, onChanged }) {
           ) : (
             <p className="muted">{t('admin.ebookNone')}</p>
           )}
+          {refused[product.id] && (
+            <div className="admin-ebook-refused">
+              <p className="admin-ebook-status">
+                {refused[product.id].originalFilename} ({formatSize(refused[product.id].sizeBytes)})
+                <span className="status status-rejected">{t('admin.scan.REJECTED')}</span>
+              </p>
+              <p className="field-error" role="alert">{t('admin.ebookKept')}</p>
+            </div>
+          )}
           <FileUpload label={t('admin.ebookUpload')} accept={product.format === 'PDF' ? '.pdf,application/pdf' : '.epub,application/epub+zip'}
             hint={t('admin.ebookHint')} buttonLabel={t('admin.ebookUpload')}
-            onUpload={(files) => upload(`/api/admin/books/${book.id}/products/${product.id}/ebook`, 'file', files.slice(0, 1))} />
+            onUpload={(files) => uploadEbook(product, files)} />
         </section>
       ))}
     </div>

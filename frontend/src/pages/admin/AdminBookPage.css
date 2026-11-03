@@ -112,6 +112,14 @@
   gap: 12px;
 }
 
+.admin-ebook-refused {
+  margin-top: 8px;
+}
+
+.admin-ebook-refused .field-error {
+  margin-top: 4px;
+}
+
 @media (min-width: 640px) {
   .admin-form-row {
     grid-template-columns: 1fr 1fr;

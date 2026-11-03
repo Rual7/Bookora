@@ -315,6 +315,7 @@ export default {
   'admin.ebook': 'E-book file for {format}',
   'admin.ebookHint': 'PDF or EPUB up to 12 MB. The real file type is checked, not only the name.',
   'admin.ebookNone': 'No file uploaded yet.',
+  'admin.ebookKept': 'This file was not stored; the file above was kept.',
   'admin.ebookUpload': 'Upload file',
   'admin.uploading': 'Uploading...',
   'admin.chooseFile': 'Choose a file first.',

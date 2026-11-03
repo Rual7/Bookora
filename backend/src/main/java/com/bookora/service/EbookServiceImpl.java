@@ -62,7 +62,7 @@ public class EbookServiceImpl implements EbookService {
 
 	@Override
 	@Transactional
-	public EbookFileDto upload(Long bookId, Long productId, MultipartFile file) {
+	public Upload upload(Long bookId, Long productId, MultipartFile file) {
 		Product product = products.findById(productId)
 				.filter(p -> p.getBook().getId().equals(bookId))
 				.orElseThrow(() -> new ResourceNotFoundException("Product not found"));
@@ -71,7 +71,7 @@ public class EbookServiceImpl implements EbookService {
 
 	@Override
 	@Transactional
-	public EbookFileDto attach(Long productId, String filename, byte[] content) {
+	public Upload attach(Long productId, String filename, byte[] content) {
 		Product product = products.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 		return store(product, filename, content);
 	}
@@ -82,19 +82,24 @@ public class EbookServiceImpl implements EbookService {
 		return ebookFiles.findByProductId(productId).map(file -> storage.exists(file.getStorageKey())).orElse(false);
 	}
 
-	private EbookFileDto store(Product product, String filename, byte[] content) {
+	/** A refused file never replaces the one the product already has; it is only reported back. */
+	private Upload store(Product product, String filename, byte[] content) {
 		if (!product.getFormat().isDigital()) {
 			throw new BadRequestException("Only an e-book product can have a file");
 		}
 		checkFile(product.getFormat(), filename, content);
 
 		ScanStatus status = scanner.scan(product.getFormat(), content);
-		String key = storage.save(content);
 		String name = displayName(filename);
+		EbookFile existing = ebookFiles.findByProductId(product.getId()).orElse(null);
+		if (existing != null && status == ScanStatus.REJECTED) {
+			log.info("E-book refused, previous file kept: productId={}, size={}", product.getId(), content.length);
+			return new Upload(new EbookFileDto(name, content.length, status), true);
+		}
+
+		String key = storage.save(content);
 		String mimeType = mimeTypeOf(product.getFormat());
 		String hash = sha256(content);
-
-		EbookFile existing = ebookFiles.findByProductId(product.getId()).orElse(null);
 		if (existing == null) {
 			existing = ebookFiles.save(new EbookFile(product, key, name, mimeType, content.length, hash, status));
 		} else {
@@ -103,7 +108,7 @@ public class EbookServiceImpl implements EbookService {
 			storage.delete(oldKey);
 		}
 		log.info("E-book stored: productId={}, size={}, scan={}", product.getId(), content.length, status);
-		return new EbookFileDto(existing.getOriginalFilename(), existing.getFileSizeBytes(), existing.getScanStatus());
+		return new Upload(new EbookFileDto(name, content.length, status), false);
 	}
 
 	@Override
