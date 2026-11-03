@@ -26,7 +26,7 @@ async function csrfToken() {
 
 async function request(path, options = {}) {
   const method = options.method ?? 'GET'
-  const headers = { Accept: 'application/json' }
+  const headers = { Accept: 'application/json', ...options.headers }
   // A FormData body (a file upload) sets its own Content-Type with the multipart boundary.
   const isUpload = options.body instanceof FormData
   if (options.body !== undefined && !isUpload) {
@@ -69,7 +69,7 @@ export async function downloadFile(path) {
 
 export const api = {
   get: (path, signal) => request(path, { signal }),
-  post: (path, body) => request(path, { method: 'POST', body }),
+  post: (path, body, headers) => request(path, { method: 'POST', body, headers }),
   put: (path, body) => request(path, { method: 'PUT', body }),
   delete: (path) => request(path, { method: 'DELETE' }),
 }

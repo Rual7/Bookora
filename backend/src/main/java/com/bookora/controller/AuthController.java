@@ -14,6 +14,7 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bookora.dto.LoginRequest;
 import com.bookora.dto.RegisterRequest;
 import com.bookora.dto.UserDto;
+import com.bookora.service.CaptchaService;
 import com.bookora.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +33,8 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+	public static final String CAPTCHA_HEADER = "X-Captcha-Token";
+
 	private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
 	private final SecurityContextHolderStrategy contextStrategy = SecurityContextHolder.getContextHolderStrategy();
@@ -39,22 +43,34 @@ public class AuthController {
 	private final AuthenticationManager authenticationManager;
 	private final UserService userService;
 
-	public AuthController(AuthenticationManager authenticationManager, UserService userService) {
+	private final CaptchaService captcha;
+
+	public AuthController(AuthenticationManager authenticationManager, UserService userService, CaptchaService captcha) {
 		this.authenticationManager = authenticationManager;
 		this.userService = userService;
+		this.captcha = captcha;
 	}
 
 	@PostMapping("/register")
 	@ResponseStatus(HttpStatus.CREATED)
-	public UserDto register(@Valid @RequestBody RegisterRequest request) {
-		return userService.register(request);
+	public UserDto register(@Valid @RequestBody RegisterRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse, @RequestHeader(value = CAPTCHA_HEADER, required = false) String captchaToken) {
+		captcha.verify(captchaToken, httpRequest.getRemoteAddr());
+		userService.register(request);
+		return signIn(request.email(), request.password(), httpRequest, httpResponse);
 	}
 
 	@PostMapping("/login")
 	public UserDto login(@Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest,
-			HttpServletResponse httpResponse) {
+			HttpServletResponse httpResponse, @RequestHeader(value = CAPTCHA_HEADER, required = false) String captchaToken) {
+		captcha.verify(captchaToken, httpRequest.getRemoteAddr());
+		return signIn(request.email(), request.password(), httpRequest, httpResponse);
+	}
+
+	/** A CAPTCHA token works once, so registering also signs the new customer in instead of asking for a second token. */
+	private UserDto signIn(String email, String password, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 		Authentication authentication = authenticationManager.authenticate(
-				UsernamePasswordAuthenticationToken.unauthenticated(request.email().trim(), request.password()));
+				UsernamePasswordAuthenticationToken.unauthenticated(email.trim(), password));
 
 		if (httpRequest.getSession(false) != null) {
 			httpRequest.changeSessionId();

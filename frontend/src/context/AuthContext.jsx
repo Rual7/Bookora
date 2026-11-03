@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { api } from '../api/client.js'
+import { captchaHeaders } from '../utils/captcha.js'
 
 const AuthContext = createContext(null)
 
@@ -14,13 +15,13 @@ export function AuthProvider({ children }) {
       .catch(() => setUser(null))
   }, [])
 
-  async function login(email, password) {
-    setUser(await api.post('/api/auth/login', { email, password }))
+  async function login(email, password, captchaToken) {
+    setUser(await api.post('/api/auth/login', { email, password }, captchaHeaders(captchaToken)))
   }
 
-  async function register(form) {
-    await api.post('/api/auth/register', form)
-    await login(form.email, form.password)
+  /** The server signs the new customer in, because a CAPTCHA token can only be used once. */
+  async function register(form, captchaToken) {
+    setUser(await api.post('/api/auth/register', form, captchaHeaders(captchaToken)))
   }
 
   async function logout() {

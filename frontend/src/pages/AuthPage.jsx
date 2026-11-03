@@ -1,11 +1,14 @@
 import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
+import Captcha from '../components/Captcha.jsx'
 import FormField from '../components/FormField.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { t } from '../i18n/t.js'
+import { TURNSTILE_SITE_KEY } from '../utils/captcha.js'
 import './AuthPage.css'
 
 const EMPTY_FORM = { firstName: '', lastName: '', email: '', password: '' }
+const CAPTCHA_ON = Boolean(TURNSTILE_SITE_KEY)
 
 /** One page for both forms: `mode` is "login" or "register". */
 export default function AuthPage({ mode }) {
@@ -17,6 +20,8 @@ export default function AuthPage({ mode }) {
   const [error, setError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({})
   const [busy, setBusy] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState('')
+  const [captchaRound, setCaptchaRound] = useState(0)
 
   if (user) return <Navigate to="/" replace />
 
@@ -31,9 +36,9 @@ export default function AuthPage({ mode }) {
     setFieldErrors({})
     try {
       if (isRegister) {
-        await register(form)
+        await register(form, captchaToken)
       } else {
-        await login(form.email, form.password)
+        await login(form.email, form.password, captchaToken)
       }
       navigate('/', { replace: true })
     } catch (problem) {
@@ -41,6 +46,7 @@ export default function AuthPage({ mode }) {
       setFieldErrors(fields)
       // Field messages already explain what is wrong, so the general message would only repeat it.
       setError(Object.keys(fields).length > 0 ? '' : problem.message)
+      setCaptchaRound(captchaRound + 1)
     } finally {
       setBusy(false)
     }
@@ -66,9 +72,11 @@ export default function AuthPage({ mode }) {
             error={fieldErrors.password} autoComplete={isRegister ? 'new-password' : 'current-password'}
             hint={isRegister ? t('auth.passwordHint') : undefined} required />
 
+          <Captcha onToken={setCaptchaToken} resetKey={captchaRound} />
+
           {error && <p className="form-error" role="alert">{error}</p>}
 
-          <button type="submit" className="btn" disabled={busy}>
+          <button type="submit" className="btn" disabled={busy || (CAPTCHA_ON && !captchaToken)}>
             {busy ? t('auth.wait') : isRegister ? t('auth.create') : t('nav.signIn')}
           </button>
         </form>

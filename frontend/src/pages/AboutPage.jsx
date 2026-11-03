@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { api } from '../api/client.js'
+import Captcha from '../components/Captcha.jsx'
 import FormField from '../components/FormField.jsx'
 import { LogoMark } from '../components/Logo.jsx'
 import { t } from '../i18n/t.js'
+import { TURNSTILE_SITE_KEY, captchaHeaders } from '../utils/captcha.js'
 import './AboutPage.css'
 
 const EMPTY_FORM = { name: '', email: '', message: '' }
@@ -46,6 +48,8 @@ function ContactForm() {
   const [error, setError] = useState('')
   const [sent, setSent] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState('')
+  const [captchaRound, setCaptchaRound] = useState(0)
 
   function update(event) {
     setForm({ ...form, [event.target.name]: event.target.value })
@@ -57,7 +61,7 @@ function ContactForm() {
     setError('')
     setFieldErrors({})
     try {
-      await api.post('/api/contact', form)
+      await api.post('/api/contact', form, captchaHeaders(captchaToken))
       setForm(EMPTY_FORM)
       setSent(true)
     } catch (problem) {
@@ -65,6 +69,7 @@ function ContactForm() {
       setFieldErrors(fields)
       setError(Object.keys(fields).length > 0 ? '' : problem.message)
     } finally {
+      setCaptchaRound(captchaRound + 1)
       setBusy(false)
     }
   }
@@ -88,8 +93,9 @@ function ContactForm() {
         error={fieldErrors.email} autoComplete="email" />
       <FormField label={t('contact.message')} name="message" multiline rows="5" maxLength="2000" value={form.message}
         onChange={update} error={fieldErrors.message} />
+      <Captcha onToken={setCaptchaToken} resetKey={captchaRound} />
       {error && <p className="form-error" role="alert">{error}</p>}
-      <button type="submit" className="btn" disabled={busy}>{busy ? t('contact.sending') : t('contact.send')}</button>
+      <button type="submit" className="btn" disabled={busy || (Boolean(TURNSTILE_SITE_KEY) && !captchaToken)}>{busy ? t('contact.sending') : t('contact.send')}</button>
     </form>
   )
 }
