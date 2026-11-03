@@ -44,6 +44,7 @@ export default function Captcha({ onToken, resetKey = 0 }) {
         onTokenRef.current('')
         widgetId = turnstile.render(box.current, {
           sitekey: TURNSTILE_SITE_KEY,
+          size: 'flexible',
           theme: document.documentElement.dataset.theme ?? 'auto',
           callback: (token) => onTokenRef.current(token),
           'expired-callback': () => onTokenRef.current(''),
