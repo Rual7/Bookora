@@ -11,7 +11,8 @@ const AVAILABILITY = {
   INSTANT_DOWNLOAD: 'pill-ok',
 }
 
-export default function BookCard({ book }) {
+/** `Heading` is the heading level of the title; it must follow the heading above the list, so a page with only an h1 passes "h2". */
+export default function BookCard({ book, Heading = 'h3' }) {
   const availability = book.availability in AVAILABILITY ? book.availability : 'OUT_OF_STOCK'
 
   return (
@@ -22,9 +23,9 @@ export default function BookCard({ book }) {
         </Link>
         <WishlistButton book={book} className="wish-btn" />
       </div>
-      <h3 className="book-card-title">
+      <Heading className="book-card-title">
         <Link to={`/books/${book.slug}`}>{book.title}</Link>
-      </h3>
+      </Heading>
       <p className="book-card-author">{book.authors.join(', ')}</p>
       {book.price != null && <p className="book-card-price">{formatPrice(book.price)}</p>}
       <span className={`pill ${AVAILABILITY[availability]}`}>{t(`availability.${availability}`)}</span>

@@ -1,13 +1,6 @@
+import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import RequireAdmin from './components/RequireAdmin.jsx'
-import AdminLayout from './pages/admin/AdminLayout.jsx'
-import AdminBooksPage from './pages/admin/AdminBooksPage.jsx'
-import AdminBookPage from './pages/admin/AdminBookPage.jsx'
-import AdminOrdersPage from './pages/admin/AdminOrdersPage.jsx'
-import AdminOrderPage from './pages/admin/AdminOrderPage.jsx'
-import AdminReviewsPage from './pages/admin/AdminReviewsPage.jsx'
-import AdminMessagesPage from './pages/admin/AdminMessagesPage.jsx'
-import AdminCustomersPage from './pages/admin/AdminCustomersPage.jsx'
 import Header from './components/Header.jsx'
 import { t } from './i18n/t.js'
 import Footer from './components/Footer.jsx'
@@ -29,6 +22,16 @@ import AddressesPage from './pages/AddressesPage.jsx'
 import LibraryPage from './pages/LibraryPage.jsx'
 import NotFoundPage from './pages/NotFoundPage.jsx'
 
+// The administration is only for staff, so its code is loaded when someone opens it
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout.jsx'))
+const AdminBooksPage = lazy(() => import('./pages/admin/AdminBooksPage.jsx'))
+const AdminBookPage = lazy(() => import('./pages/admin/AdminBookPage.jsx'))
+const AdminOrdersPage = lazy(() => import('./pages/admin/AdminOrdersPage.jsx'))
+const AdminOrderPage = lazy(() => import('./pages/admin/AdminOrderPage.jsx'))
+const AdminReviewsPage = lazy(() => import('./pages/admin/AdminReviewsPage.jsx'))
+const AdminMessagesPage = lazy(() => import('./pages/admin/AdminMessagesPage.jsx'))
+const AdminCustomersPage = lazy(() => import('./pages/admin/AdminCustomersPage.jsx'))
+
 export default function App() {
   return (
     <>
@@ -37,33 +40,35 @@ export default function App() {
       </a>
       <Header />
       <main id="main" className="main-content">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/books" element={<BooksPage />} />
-          <Route path="/books/:slug" element={<BookPage />} />
-          <Route path="/categories" element={<CategoriesPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/login" element={<AuthPage mode="login" />} />
-          <Route path="/register" element={<AuthPage mode="register" />} />
-          <Route path="/checkout" element={<RequireAuth><CheckoutPage /></RequireAuth>} />
-          <Route path="/orders" element={<RequireAuth><OrdersPage /></RequireAuth>} />
-          <Route path="/orders/:orderNumber" element={<RequireAuth><OrderPage /></RequireAuth>} />
-          <Route path="/ebooks" element={<RequireAuth><LibraryPage /></RequireAuth>} />
-          <Route path="/addresses"element={<RequireAuth><AddressesPage /></RequireAuth>} />
-          <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>
-            <Route index element={<Navigate to="books" replace />} />
-            <Route path="books" element={<AdminBooksPage />} />
-            <Route path="books/new" element={<AdminBookPage />} />
-            <Route path="books/:id" element={<AdminBookPage />} />
-            <Route path="orders" element={<AdminOrdersPage />} />
-            <Route path="orders/:orderNumber" element={<AdminOrderPage />} />
-            <Route path="reviews" element={<AdminReviewsPage />} />
-            <Route path="messages" element={<AdminMessagesPage />} />
-            <Route path="customers" element={<AdminCustomersPage />} />
-          </Route>
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
+        <Suspense fallback={<p className="container page muted">{t('common.loading')}</p>}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/books" element={<BooksPage />} />
+            <Route path="/books/:slug" element={<BookPage />} />
+            <Route path="/categories" element={<CategoriesPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/login" element={<AuthPage mode="login" />} />
+            <Route path="/register" element={<AuthPage mode="register" />} />
+            <Route path="/checkout" element={<RequireAuth><CheckoutPage /></RequireAuth>} />
+            <Route path="/orders" element={<RequireAuth><OrdersPage /></RequireAuth>} />
+            <Route path="/orders/:orderNumber" element={<RequireAuth><OrderPage /></RequireAuth>} />
+            <Route path="/ebooks" element={<RequireAuth><LibraryPage /></RequireAuth>} />
+            <Route path="/addresses"element={<RequireAuth><AddressesPage /></RequireAuth>} />
+            <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>
+              <Route index element={<Navigate to="books" replace />} />
+              <Route path="books" element={<AdminBooksPage />} />
+              <Route path="books/new" element={<AdminBookPage />} />
+              <Route path="books/:id" element={<AdminBookPage />} />
+              <Route path="orders" element={<AdminOrdersPage />} />
+              <Route path="orders/:orderNumber" element={<AdminOrderPage />} />
+              <Route path="reviews" element={<AdminReviewsPage />} />
+              <Route path="messages" element={<AdminMessagesPage />} />
+              <Route path="customers" element={<AdminCustomersPage />} />
+            </Route>
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
       </main>
       <Footer />
       <CartDrawer />

@@ -49,19 +49,19 @@ export default function FeaturedCarousel() {
             <ChevronLeft size={22} strokeWidth={1.75} aria-hidden="true" />
           </button>
 
-          <ul className="carousel-track" ref={trackRef} onScroll={update}>
+          <div className="carousel-track" ref={trackRef} onScroll={update}>
             {loading
               ? Array.from({ length: SKELETON_COUNT }, (_, index) => (
-                  <li key={index} className="carousel-slide" aria-hidden="true">
+                  <div key={index} className="carousel-slide" aria-hidden="true">
                     <div className="book-card-skeleton">
                       <span className="skeleton skeleton-cover" />
                       <span className="skeleton skeleton-line" />
                       <span className="skeleton skeleton-line skeleton-short" />
                     </div>
-                  </li>
+                  </div>
                 ))
               : books.map((book, index) => (
-                  <li
+                  <div
                     key={book.id}
                     className="carousel-slide"
                     role="group"
@@ -69,9 +69,9 @@ export default function FeaturedCarousel() {
                     aria-label={t('featured.slide', { index: index + 1, total: books.length })}
                   >
                     <BookCard book={book} />
-                  </li>
+                  </div>
                 ))}
-          </ul>
+          </div>
 
           <button
             type="button"

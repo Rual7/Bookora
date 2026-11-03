@@ -6,6 +6,8 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* keeps the page from jumping sideways when a scrollbar appears */
+  scrollbar-gutter: stable;
 }
 
 body {

@@ -80,8 +80,8 @@ class AuthControllerTest {
 	}
 
 	@Test
-	void meWithoutLoginIsUnauthorized() throws Exception {
-		mvc.perform(get("/api/auth/me")).andExpect(status().isUnauthorized());
+	void meWithoutLoginIsEmptyInsteadOfAnErrorSoTheBrowserConsoleStaysClean() throws Exception {
+		mvc.perform(get("/api/auth/me")).andExpect(status().isNoContent());
 	}
 
 }

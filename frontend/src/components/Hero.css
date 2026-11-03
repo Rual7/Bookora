@@ -5,7 +5,7 @@
   align-items: center;
   min-height: 480px;
   background-color: var(--bg-alt);
-  background-image: linear-gradient(var(--hero-tint), var(--hero-tint)), url("/images/HeroIMG.jpg");
+  background-image: linear-gradient(var(--hero-tint), var(--hero-tint)), url("/images/HeroIMG.webp");
   background-repeat: no-repeat;
   background-position: right bottom;
   background-size: cover;

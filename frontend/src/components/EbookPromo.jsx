@@ -14,7 +14,7 @@ export default function EbookPromo() {
             {t('ebookPromo.cta')}
           </Link>
         </div>
-        <img className="ebook-image" src="/images/Bookora-PromoIMG.jpg" alt="" width="2228" height="464"
+        <img className="ebook-image" src="/images/Bookora-PromoIMG.webp" alt="" width="1600" height="333"
           loading="lazy" />
       </div>
     </section>

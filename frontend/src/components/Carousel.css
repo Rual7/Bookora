@@ -9,7 +9,6 @@
   gap: var(--gap);
   margin: 0;
   padding: 8px 0 16px;
-  list-style: none;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
@@ -61,28 +60,30 @@
 .carousel-dots {
   display: flex;
   justify-content: center;
-  gap: 8px;
+  gap: 0;
   margin-top: 4px;
 }
 
+/* The button is the touch target (24px, the WCAG minimum); the visible dot is drawn inside it */
 .carousel-dot {
-  position: relative;
-  width: 10px;
-  height: 10px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
   padding: 0;
   border: 0;
+  background: none;
+}
+
+.carousel-dot::before {
+  content: "";
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: var(--border);
 }
 
-/* 44px touch target around the small dot */
-.carousel-dot::after {
-  content: "";
-  position: absolute;
-  inset: -17px;
-}
-
-.carousel-dot.is-active {
+.carousel-dot.is-active::before {
   background: var(--accent);
 }
 
