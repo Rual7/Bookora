@@ -120,6 +120,19 @@
   font-weight: 600;
 }
 
+/* A status pill that is a button: outlined in the status colour, filled with the pill's own colour when the mouse is over it. */
+.status.status-button {
+  padding: 1px 9px;
+  border: 1px solid currentColor;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.status.status-clean.status-button:hover {
+  background: var(--success-bg);
+}
+
 .status-pending_payment {
   background: var(--warning-bg);
   color: var(--warning-ink);

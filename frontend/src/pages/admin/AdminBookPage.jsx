@@ -163,7 +163,7 @@ function BookEditor({ book, categories, onChanged }) {
                   {index === 0 ? (
                     <span className="status status-clean">{t('admin.imageMain')}</span>
                   ) : (
-                    <button type="button" className="link-btn" onClick={() => changeImages(() => api.put(`/api/admin/books/${book.id}/images/${image.id}/main`))}>
+                    <button type="button" className="status status-clean status-button" onClick={() => changeImages(() => api.put(`/api/admin/books/${book.id}/images/${image.id}/main`))}>
                       {t('admin.imageMakeMain')}
                     </button>
                   )}

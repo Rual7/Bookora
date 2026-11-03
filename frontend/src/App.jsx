@@ -1,13 +1,14 @@
 import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
-import RequireAdmin from './components/RequireAdmin.jsx'
 import Header from './components/Header.jsx'
-import { t } from './i18n/t.js'
 import Footer from './components/Footer.jsx'
 import CartDrawer from './components/CartDrawer.jsx'
 import WishlistDrawer from './components/WishlistDrawer.jsx'
 import StorageNotice from './components/StorageNotice.jsx'
 import RequireAuth from './components/RequireAuth.jsx'
+import RequireAdmin from './components/RequireAdmin.jsx'
+import ScrollToTop from './components/ScrollToTop.jsx'
+import { t } from './i18n/t.js'
 import HomePage from './pages/HomePage.jsx'
 import BooksPage from './pages/BooksPage.jsx'
 import BookPage from './pages/BookPage.jsx'
@@ -22,7 +23,7 @@ import AddressesPage from './pages/AddressesPage.jsx'
 import LibraryPage from './pages/LibraryPage.jsx'
 import NotFoundPage from './pages/NotFoundPage.jsx'
 
-// The administration is only for staff, so its code is loaded when someone opens it
+// The administration is only for staff, so its code is loaded when someone opens it.
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout.jsx'))
 const AdminBooksPage = lazy(() => import('./pages/admin/AdminBooksPage.jsx'))
 const AdminBookPage = lazy(() => import('./pages/admin/AdminBookPage.jsx'))
@@ -38,6 +39,7 @@ export default function App() {
       <a className="skip-link" href="#main">
         {t('nav.skip')}
       </a>
+      <ScrollToTop />
       <Header />
       <main id="main" className="main-content">
         <Suspense fallback={<p className="container page muted">{t('common.loading')}</p>}>
@@ -54,7 +56,7 @@ export default function App() {
             <Route path="/orders" element={<RequireAuth><OrdersPage /></RequireAuth>} />
             <Route path="/orders/:orderNumber" element={<RequireAuth><OrderPage /></RequireAuth>} />
             <Route path="/ebooks" element={<RequireAuth><LibraryPage /></RequireAuth>} />
-            <Route path="/addresses"element={<RequireAuth><AddressesPage /></RequireAuth>} />
+            <Route path="/addresses" element={<RequireAuth><AddressesPage /></RequireAuth>} />
             <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>
               <Route index element={<Navigate to="books" replace />} />
               <Route path="books" element={<AdminBooksPage />} />

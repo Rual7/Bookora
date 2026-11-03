@@ -1,5 +1,7 @@
 .cover {
   width: 100%;
+  /* The height attribute of the picture would otherwise beat aspect-ratio and stretch it inside narrow cards. */
+  height: auto;
   aspect-ratio: 2 / 3;
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
