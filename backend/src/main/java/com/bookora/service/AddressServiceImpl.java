@@ -2,6 +2,8 @@ package com.bookora.service;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +18,8 @@ import com.bookora.repository.UserRepository;
 @Service
 @Transactional
 public class AddressServiceImpl implements AddressService {
+
+	private static final Logger log = LoggerFactory.getLogger(AddressServiceImpl.class);
 
 	private final AddressRepository addresses;
 	private final UserRepository users;
@@ -44,7 +48,9 @@ public class AddressServiceImpl implements AddressService {
 		if (request.defaultAddress() || saved.isEmpty()) {
 			makeDefault(address, saved);
 		}
-		return toDto(addresses.save(address));
+		Address created = addresses.save(address);
+		log.info("Address added: userId={}, addressId={}", user.getId(), created.getId());
+		return toDto(created);
 	}
 
 	@Override
@@ -56,6 +62,7 @@ public class AddressServiceImpl implements AddressService {
 		if (request.defaultAddress()) {
 			makeDefault(address, addresses.findByUserIdOrderByDefaultAddressDescIdAsc(user.getId()));
 		}
+		log.info("Address changed: userId={}, addressId={}", user.getId(), addressId);
 		return toDto(address);
 	}
 
@@ -64,6 +71,7 @@ public class AddressServiceImpl implements AddressService {
 		AppUser user = findUser(email);
 		Address address = findOwned(user, addressId);
 		addresses.delete(address);
+		log.info("Address deleted: userId={}, addressId={}", user.getId(), addressId);
 
 		if (address.isDefaultAddress()) {
 			addresses.findByUserIdOrderByDefaultAddressDescIdAsc(user.getId()).stream()

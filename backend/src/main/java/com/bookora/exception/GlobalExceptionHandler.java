@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -49,8 +51,8 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(AuthenticationException.class)
-	ProblemDetail handleBadCredentials(AuthenticationException ex) {
-		log.warn("Failed authentication attempt: {}", ex.getClass().getSimpleName());
+	ProblemDetail handleBadCredentials(AuthenticationException ex, HttpServletRequest request) {
+		log.warn("Failed sign-in: client={}, reason={}", request.getRemoteAddr(), ex.getClass().getSimpleName());
 		return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Invalid email or password");
 	}
 

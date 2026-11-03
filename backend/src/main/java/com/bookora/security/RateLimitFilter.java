@@ -6,6 +6,8 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -19,6 +21,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 /** Lets each client address make a limited number of requests per minute; the next ones get 429 until the minute is over. */
 public class RateLimitFilter extends OncePerRequestFilter {
+
+	private static final Logger log = LoggerFactory.getLogger(RateLimitFilter.class);
 
 	private static final int MAX_TRACKED_CLIENTS = 10_000;
 
@@ -40,6 +44,9 @@ public class RateLimitFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		ConsumptionProbe probe = bucketFor(request.getRemoteAddr()).tryConsumeAndReturnRemaining(1);
 		if (probe.isConsumed()) {
+			if (probe.getRemainingTokens() == 0) {
+				log.warn("Rate limit reached: client={}", request.getRemoteAddr());
+			}
 			chain.doFilter(request, response);
 			return;
 		}

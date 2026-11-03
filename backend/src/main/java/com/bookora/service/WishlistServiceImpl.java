@@ -2,6 +2,8 @@ package com.bookora.service;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,8 @@ import com.bookora.repository.WishlistRepository;
 @Service
 @Transactional
 public class WishlistServiceImpl implements WishlistService {
+
+	private static final Logger log = LoggerFactory.getLogger(WishlistServiceImpl.class);
 
 	private final WishlistRepository wishlist;
 	private final BookRepository books;
@@ -52,12 +56,14 @@ public class WishlistServiceImpl implements WishlistService {
 				.filter(Book::isActive)
 				.orElseThrow(() -> new ResourceNotFoundException("Book not found"));
 		wishlist.save(new WishlistItem(user, book));
+		log.info("Wishlist book added: userId={}, bookId={}", user.getId(), bookId);
 	}
 
 	@Override
 	public void remove(String email, Long bookId) {
 		AppUser user = findUser(email);
 		wishlist.deleteById(new WishlistItemId(user.getId(), bookId));
+		log.info("Wishlist book removed: userId={}, bookId={}", user.getId(), bookId);
 	}
 
 	private AppUser findUser(String email) {

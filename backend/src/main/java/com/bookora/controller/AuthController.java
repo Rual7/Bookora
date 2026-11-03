@@ -80,8 +80,9 @@ public class AuthController {
 		contextStrategy.setContext(context);
 		contextRepository.saveContext(context, httpRequest, httpResponse);
 
-		log.info("User signed in: {}", authentication.getName());
-		return userService.getByEmail(authentication.getName());
+		UserDto user = userService.getByEmail(authentication.getName());
+		log.info("User signed in: userId={}", user.id());
+		return user;
 	}
 
 	/** Does nothing itself; the response carries the CSRF cookie the browser needs before its next POST. */

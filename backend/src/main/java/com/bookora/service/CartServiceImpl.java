@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,8 @@ public class CartServiceImpl implements CartService {
 
 	static final int MAX_PER_ITEM = 10;
 
+	private static final Logger log = LoggerFactory.getLogger(CartServiceImpl.class);
+
 	private final CartRepository carts;
 	private final ProductRepository products;
 	private final UserRepository users;
@@ -51,7 +55,8 @@ public class CartServiceImpl implements CartService {
 
 	@Override
 	public CartDto addItem(String email, Long productId, int quantity) {
-		Cart cart = findOrCreateCart(email);
+		AppUser user = lockUser(email);
+		Cart cart = cartOf(user);
 		Product product = findBuyableProduct(productId);
 		CartItem existing = cart.findItem(productId);
 
@@ -64,25 +69,30 @@ public class CartServiceImpl implements CartService {
 		} else {
 			existing.setQuantity(newQuantity);
 		}
+		log.info("Cart item added: userId={}, productId={}, quantity={}", user.getId(), productId, newQuantity);
 		return toDto(linesOf(cart));
 	}
 
 	@Override
 	public CartDto setQuantity(String email, Long productId, int quantity) {
-		Cart cart = findOrCreateCart(email);
+		AppUser user = lockUser(email);
+		Cart cart = cartOf(user);
 		CartItem item = cart.findItem(productId);
 		if (item == null) {
 			throw new ResourceNotFoundException("This product is not in your cart");
 		}
 		checkQuantity(item.getProduct(), quantity);
 		item.setQuantity(quantity);
+		log.info("Cart quantity changed: userId={}, productId={}, quantity={}", user.getId(), productId, quantity);
 		return toDto(linesOf(cart));
 	}
 
 	@Override
 	public CartDto removeItem(String email, Long productId) {
-		Cart cart = findOrCreateCart(email);
+		AppUser user = lockUser(email);
+		Cart cart = cartOf(user);
 		cart.removeItem(productId);
+		log.info("Cart item removed: userId={}, productId={}", user.getId(), productId);
 		return toDto(linesOf(cart));
 	}
 
@@ -108,9 +118,15 @@ public class CartServiceImpl implements CartService {
 	}
 
 	private Cart findOrCreateCart(String email) {
-		// Locking the user makes simultaneous requests wait, so a first cart is never created twice.
-		AppUser user = users.findAndLockByEmail(email)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found"));
+		return cartOf(lockUser(email));
+	}
+
+	/** Locking the user makes simultaneous requests wait, so a first cart is never created twice. */
+	private AppUser lockUser(String email) {
+		return users.findAndLockByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+	}
+
+	private Cart cartOf(AppUser user) {
 		return carts.findByUserId(user.getId()).orElseGet(() -> carts.save(new Cart(user)));
 	}
 

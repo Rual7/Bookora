@@ -21,6 +21,7 @@ import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWrite
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 import com.bookora.security.CsrfCookieFilter;
+import com.bookora.security.LogoutAudit;
 import com.bookora.security.RateLimitFilter;
 
 @Configuration
@@ -29,7 +30,8 @@ public class SecurityConfig {
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http,
-			@Value("${bookora.rate-limit.requests-per-minute}") int requestsPerMinute) throws Exception {
+			@Value("${bookora.rate-limit.requests-per-minute}") int requestsPerMinute, LogoutAudit logoutAudit)
+			throws Exception {
 		http
 				.addFilterBefore(new RateLimitFilter(requestsPerMinute), CsrfFilter.class)
 				.headers(headers -> headers
@@ -52,6 +54,7 @@ public class SecurityConfig {
 				.exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
 				.logout(logout -> logout
 						.logoutUrl("/api/auth/logout")
+						.addLogoutHandler(logoutAudit)
 						.logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()));
 		return http.build();
 	}
