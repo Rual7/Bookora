@@ -67,6 +67,13 @@ class GuestApiTest {
 	}
 
 	@Test
+	void searchFindsABookByItsAuthor() throws Exception {
+		mvc.perform(get("/api/books").param("q", "shelley"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.content[0].slug").value("frankenstein"));
+	}
+
+	@Test
 	void contactFormIsSavedAndValidated() throws Exception {
 		mvc.perform(post("/api/contact").with(csrf()).contentType(MediaType.APPLICATION_JSON)
 				.content("{\"name\":\"Ana\",\"email\":\"ana@example.com\",\"message\":\"Hello\"}"))

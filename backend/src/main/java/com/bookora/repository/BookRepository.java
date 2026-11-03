@@ -28,12 +28,17 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 	boolean existsBySlug(String slug);
 
 	/** Every book, hidden ones included, for the administration list. {@code query} is lower-cased and wrapped in %. */
-	@Query("select b from Book b where :query = '' or lower(b.title) like :query order by b.title")
+	@Query("""
+			select b from Book b
+			where :query = '' or lower(b.title) like :query
+			   or exists (select 1 from b.authors a where lower(a.name) like :query)
+			order by b.title
+			""")
 	Page<Book> searchAll(@Param("query") String query, Pageable pageable);
 
 	/**
 	 * Empty strings mean "no filter" so the query never binds untyped nulls.
-	 * {@code query} must already be lower-cased and wrapped in % wildcards.
+	 * {@code query} must already be lower-cased and wrapped in % wildcards; it matches the title or an author.
 	 * A book matches when it has an active product in one of the given formats.
 	 * {@code sort} is a {@link com.bookora.model.BookSort} name. Each CASE below is empty unless it is the chosen
 	 * order, so only that one decides; books with no reviews come last when sorting by rating.
@@ -41,7 +46,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 	@Query("""
 			select b from Book b
 			where b.active = true
-			  and (:query = '' or lower(b.title) like :query)
+			  and (:query = '' or lower(b.title) like :query
+			       or exists (select 1 from b.authors a where lower(a.name) like :query))
 			  and (:category = '' or exists (select 1 from b.categories c where c.slug = :category))
 			  and exists (select 1 from b.products p where p.active = true and p.format in :formats)
 			order by
