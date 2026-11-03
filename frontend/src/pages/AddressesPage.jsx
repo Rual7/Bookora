@@ -5,10 +5,13 @@ import EmptyState from '../components/EmptyState.jsx'
 import AddressForm from '../components/AddressForm.jsx'
 import AddressText from '../components/AddressText.jsx'
 import { t } from '../i18n/t.js'
+import { usePageMeta } from '../hooks/usePageMeta.js'
 import { useAddresses } from '../hooks/useAddresses.js'
 import './AddressesPage.css'
 
 export default function AddressesPage() {
+  usePageMeta({ title: t('meta.addresses'), noindex: true })
+
   const { addresses, error, save, remove } = useAddresses()
   // null = no form, 'new' = adding, otherwise the id of the address being edited
   const [editing, setEditing] = useState(null)

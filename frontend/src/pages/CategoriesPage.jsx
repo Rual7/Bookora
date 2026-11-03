@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
 import CategoryArt from '../components/CategoryArt.jsx'
 import { t } from '../i18n/t.js'
+import { usePageMeta } from '../hooks/usePageMeta.js'
 import { useFetch } from '../hooks/useFetch.js'
 import './CategoriesPage.css'
 
 export default function CategoriesPage() {
+  usePageMeta({ title: t('meta.categories'), description: t('meta.categoriesDescription') })
   const { data: categories, loading, error } = useFetch('/api/categories')
 
   return (

@@ -5,6 +5,7 @@ import AddressText from '../components/AddressText.jsx'
 import StatusPage from '../components/StatusPage.jsx'
 import OrderStatus from '../components/OrderStatus.jsx'
 import { t } from '../i18n/t.js'
+import { usePageMeta } from '../hooks/usePageMeta.js'
 import { useOrder } from '../hooks/useOrder.js'
 import { usePayment } from '../hooks/usePayment.js'
 import { downloadFile } from '../api/client.js'
@@ -17,6 +18,7 @@ const GIVE_UP_AFTER_MS = 40000
 // Old orders keep the currency they were placed in, so prices are shown with order.currency.
 export default function OrderPage() {
   const { orderNumber } = useParams()
+  usePageMeta({ title: t('order.title', { number: orderNumber }), noindex: true })
   const { state, pathname } = useLocation()
   const navigate = useNavigate()
   const [params] = useSearchParams()

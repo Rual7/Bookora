@@ -4,12 +4,15 @@ import Captcha from '../components/Captcha.jsx'
 import FormField from '../components/FormField.jsx'
 import { LogoMark } from '../components/Logo.jsx'
 import { t } from '../i18n/t.js'
+import { usePageMeta } from '../hooks/usePageMeta.js'
 import { TURNSTILE_SITE_KEY, captchaHeaders } from '../utils/captcha.js'
 import './AboutPage.css'
 
 const EMPTY_FORM = { name: '', email: '', message: '' }
 
 export default function AboutPage() {
+  usePageMeta({ title: t('meta.about'), description: t('meta.aboutDescription') })
+
   return (
     <>
       <section className="about-hero" aria-labelledby="about-title">

@@ -4,10 +4,13 @@ import AccountNav from '../components/AccountNav.jsx'
 import EmptyState from '../components/EmptyState.jsx'
 import OrderStatus from '../components/OrderStatus.jsx'
 import { t } from '../i18n/t.js'
+import { usePageMeta } from '../hooks/usePageMeta.js'
 import { useFetch } from '../hooks/useFetch.js'
 import { formatDate, formatPrice } from '../utils/format.js'
 
 export default function OrdersPage() {
+  usePageMeta({ title: t('meta.orders'), noindex: true })
+
   const { data: orders, error, loading } = useFetch('/api/orders')
 
   return (

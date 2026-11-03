@@ -22,6 +22,9 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
 	Optional<Book> findBySlugAndActiveTrue(String slug);
 
+	@Query("select b.slug from Book b where b.active = true order by b.slug")
+	List<String> findActiveSlugs();
+
 	boolean existsBySlug(String slug);
 
 	/** Every book, hidden ones included, for the administration list. {@code query} is lower-cased and wrapped in %. */

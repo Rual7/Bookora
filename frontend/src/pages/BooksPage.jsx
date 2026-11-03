@@ -1,6 +1,7 @@
 import { useSearchParams } from 'react-router-dom'
 import BookCard from '../components/BookCard.jsx'
 import { t } from '../i18n/t.js'
+import { usePageMeta } from '../hooks/usePageMeta.js'
 import { useFetch } from '../hooks/useFetch.js'
 import { useInfiniteList, useOnVisible } from '../hooks/useInfiniteList.js'
 import './BooksPage.css'
@@ -37,6 +38,11 @@ export default function BooksPage() {
   }
 
   const query = params.get('q')
+  usePageMeta({
+    title: query ? t('meta.booksSearch', { query }) : t('meta.books'),
+    description: t('meta.booksDescription'),
+    noindex: Boolean(query),
+  })
 
   return (
     <div className="container page">
@@ -61,7 +67,7 @@ export default function BooksPage() {
         </Select>
       </div>
 
-      {loading && <p className="muted">{t('common.loading')}</p>}
+      {loading && <p className="muted books-loading">{t('common.loading')}</p>}
       {error && <p className="muted">{t('books.error')}</p>}
 
       {!loading && !error && (
@@ -72,7 +78,7 @@ export default function BooksPage() {
           <ul className="books-grid">
             {items.map((book) => (
               <li key={book.id}>
-                <BookCard book={book} />
+                <BookCard book={book} Heading="h2" />
               </li>
             ))}
           </ul>

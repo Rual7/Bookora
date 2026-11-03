@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { t } from '../../i18n/t.js'
+import { usePageMeta } from '../../hooks/usePageMeta.js'
 import { useScrollEdges } from '../../hooks/useScrollEdges.js'
 import './AdminLayout.css'
 
@@ -14,6 +15,8 @@ const SECTIONS = [
 ]
 
 export default function AdminLayout() {
+  usePageMeta({ title: t('meta.admin'), noindex: true })
+
   const rowRef = useRef(null)
   const { pathname } = useLocation()
   const { atStart, atEnd, update, scrollByPage } = useScrollEdges(rowRef)

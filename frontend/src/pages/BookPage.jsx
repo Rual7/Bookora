@@ -10,11 +10,23 @@ import { t } from '../i18n/t.js'
 import { formatPrice } from '../utils/format.js'
 import { usePanel } from '../context/PanelContext.jsx'
 import { useFetch } from '../hooks/useFetch.js'
+import { shorten, usePageMeta } from '../hooks/usePageMeta.js'
 import './BookPage.css'
+
+/** The title and description of a book page; a missing book or a failed load stays out of search results. */
+function bookMeta(book, error) {
+  if (!book) return { title: error?.status === 404 ? t('book.notFound') : t('meta.books'), noindex: true }
+  const vars = { title: book.title, authors: book.authors.join(', ') }
+  return {
+    title: t('meta.book', vars),
+    description: book.description ? shorten(book.description) : t('meta.bookDescription', vars),
+  }
+}
 
 export default function BookPage() {
   const { slug } = useParams()
   const { data: book, loading, error } = useFetch(`/api/books/${encodeURIComponent(slug)}`)
+  usePageMeta(bookMeta(book, error))
 
   if (loading) return <div className="container page muted">{t('common.loading')}</div>
   if (error) {

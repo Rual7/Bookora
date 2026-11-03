@@ -45,7 +45,7 @@ public class SecurityConfig {
 						.ignoringRequestMatchers("/api/webhooks/**"))
 				.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers(HttpMethod.GET, "/api/books/**", "/api/categories/**", "/api/covers/**", "/api/auth/csrf").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/books/**", "/api/categories/**", "/api/covers/**", "/api/auth/csrf", "/api/auth/me", "/sitemap.xml", "/robots.txt").permitAll()
 						.requestMatchers("/api/auth/register", "/api/auth/login", "/api/webhooks/**").permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/cart/preview", "/api/contact").permitAll()
 						.requestMatchers("/error").permitAll()

@@ -6,10 +6,13 @@ import EmptyCart from '../components/EmptyCart.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useCart } from '../context/CartContext.jsx'
 import { t } from '../i18n/t.js'
+import { usePageMeta } from '../hooks/usePageMeta.js'
 import { formatPrice } from '../utils/format.js'
 import './CartPage.css'
 
 export default function CartPage() {
+  usePageMeta({ title: t('meta.cart'), noindex: true })
+
   const { user } = useAuth()
   const { cart, changeQuantity, removeItem } = useCart()
   const [error, setError] = useState('')

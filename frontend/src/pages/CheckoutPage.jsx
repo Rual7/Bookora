@@ -5,6 +5,7 @@ import AddressText from '../components/AddressText.jsx'
 import EmptyCart from '../components/EmptyCart.jsx'
 import { useCart } from '../context/CartContext.jsx'
 import { t } from '../i18n/t.js'
+import { usePageMeta } from '../hooks/usePageMeta.js'
 import { useAddresses } from '../hooks/useAddresses.js'
 import { goToPayment } from '../hooks/usePayment.js'
 import { api } from '../api/client.js'
@@ -12,6 +13,8 @@ import { formatPrice, isDigital } from '../utils/format.js'
 import './CheckoutPage.css'
 
 export default function CheckoutPage() {
+  usePageMeta({ title: t('meta.checkout'), noindex: true })
+
   const navigate = useNavigate()
   const { cart, reloadCart } = useCart()
   const { addresses, error: loadError, save } = useAddresses()

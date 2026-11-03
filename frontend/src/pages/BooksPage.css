@@ -40,6 +40,11 @@
   list-style: none;
 }
 
+.books-loading {
+  /* holds the place of the list so the footer does not jump down when the books arrive */
+  min-height: 70vh;
+}
+
 .books-more {
   margin-top: 24px;
   text-align: center;

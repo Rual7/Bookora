@@ -6,12 +6,15 @@ import Cover from '../components/Cover.jsx'
 import EmptyState from '../components/EmptyState.jsx'
 import { downloadFile } from '../api/client.js'
 import { t } from '../i18n/t.js'
+import { usePageMeta } from '../hooks/usePageMeta.js'
 import { useFetch } from '../hooks/useFetch.js'
 import { formatDate } from '../utils/format.js'
 import './LibraryPage.css'
 
 /** The e-books a customer has paid for, with a button to save each one and, for PDFs, to read it in the browser. */
 export default function LibraryPage() {
+  usePageMeta({ title: t('meta.ebooks'), noindex: true })
+
   const { data: items, error, loading } = useFetch('/api/library')
   const [problem, setProblem] = useState('')
 

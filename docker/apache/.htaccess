@@ -17,7 +17,7 @@ LimitRequestBody 13000000
 
 # Single-page app routing: everything that is not a file or /api goes to index.html
 RewriteEngine On
-RewriteCond %{REQUEST_URI} !^/api/
+RewriteCond %{REQUEST_URI} !^/(api/|sitemap\.xml|robots\.txt)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ /index.html [L]

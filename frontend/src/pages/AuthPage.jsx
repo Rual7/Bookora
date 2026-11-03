@@ -4,6 +4,7 @@ import Captcha from '../components/Captcha.jsx'
 import FormField from '../components/FormField.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { t } from '../i18n/t.js'
+import { usePageMeta } from '../hooks/usePageMeta.js'
 import { TURNSTILE_SITE_KEY } from '../utils/captcha.js'
 import './AuthPage.css'
 
@@ -12,6 +13,8 @@ const CAPTCHA_ON = Boolean(TURNSTILE_SITE_KEY)
 
 /** One page for both forms: `mode` is "login" or "register". */
 export default function AuthPage({ mode }) {
+  usePageMeta({ title: mode === 'register' ? t('auth.registerTitle') : t('nav.signIn'), noindex: true })
+
   const isRegister = mode === 'register'
   const { user, login, register } = useAuth()
   const navigate = useNavigate()
