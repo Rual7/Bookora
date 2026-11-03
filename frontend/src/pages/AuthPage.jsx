@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import Captcha from '../components/Captcha.jsx'
 import FormField from '../components/FormField.jsx'
+import { formErrors } from '../api/client.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import { t } from '../i18n/t.js'
 import { usePageMeta } from '../hooks/usePageMeta.js'
@@ -45,10 +46,9 @@ export default function AuthPage({ mode }) {
       }
       navigate('/', { replace: true })
     } catch (problem) {
-      const fields = problem.fieldErrors ?? {}
+      const { fields, message } = formErrors(problem)
       setFieldErrors(fields)
-      // Field messages already explain what is wrong, so the general message would only repeat it.
-      setError(Object.keys(fields).length > 0 ? '' : problem.message)
+      setError(message)
       setCaptchaRound(captchaRound + 1)
     } finally {
       setBusy(false)

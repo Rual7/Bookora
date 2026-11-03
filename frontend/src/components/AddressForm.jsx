@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import FormField from './FormField.jsx'
+import { formErrors } from '../api/client.js'
 import { t } from '../i18n/t.js'
 import './AddressForm.css'
 
@@ -36,9 +37,9 @@ export default function AddressForm({ address, onSave, onCancel }) {
     try {
       await onSave(form)
     } catch (problem) {
-      const fields = problem.fieldErrors ?? {}
+      const { fields, message } = formErrors(problem)
       setFieldErrors(fields)
-      setError(Object.keys(fields).length > 0 ? '' : problem.message)
+      setError(message)
       setBusy(false)
     }
   }

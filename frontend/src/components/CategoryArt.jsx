@@ -1,9 +1,6 @@
 import './CategoryArt.css'
 
-/**
- * One simple illustration per category, drawn in colours that suit its theme.
- * Replace them with photos later by swapping this component's output.
- */
+/** One simple illustration per category, drawn in colours that suit its theme. */
 const DRAWINGS = {
   fiction: (
     <>

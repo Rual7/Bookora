@@ -17,6 +17,7 @@ export default {
   'nav.cart_one': 'Cart, {count} item',
   'nav.cart_other': 'Cart, {count} items',
   'nav.skip': 'Skip to main content',
+  'nav.logo': 'Bookora home',
   'theme.toLight': 'Switch to light theme',
   'theme.toDark': 'Switch to dark theme',
 
@@ -24,7 +25,7 @@ export default {
   'search.label': 'Search for a book',
   'search.searching': 'Searching...',
   'search.unavailable': 'The search is not available right now.',
-  'search.none': 'No books found for â€œ{term}â€. Try another title or author.',
+  'search.none': 'No books found for “{term}”. Try another title or author.',
   'search.seeAll': 'See all {count} results',
 
   'hero.eyebrow': 'Books for every story of your life',
@@ -150,6 +151,7 @@ export default {
   'pagination.next': 'Next page',
   'pagination.status': 'Page {page} of {total}',
 
+  'book.cover': 'Cover of {title}',
   'book.images': 'Pictures of this book',
   'book.showImage': 'Show picture {number}',
   'book.notFound': 'Book not found',

@@ -112,7 +112,7 @@ export default function Header() {
             aria-controls="primary-nav"
             onClick={() => toggle('menu')}
           >
-            {menuOpen ? <X size={22} strokeWidth={1.5} /> : <Menu size={22} strokeWidth={1.5} />}
+            {menuOpen ? <X size={22} strokeWidth={1.5} aria-hidden="true" /> : <Menu size={22} strokeWidth={1.5} aria-hidden="true" />}
           </button>
         </div>
       </div>

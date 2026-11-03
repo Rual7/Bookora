@@ -26,7 +26,7 @@ export default function CartDrawer() {
           <ul className="drawer-body">
             {cart.items.map((item) => (
               <li key={item.productId} className="drawer-row">
-                <Cover book={{ id: item.bookId, title: item.title, authors: item.authors, coverImagePath: item.coverImagePath }} />
+                <Cover book={{ ...item, id: item.bookId }} />
                 <div>
                   <Link to={`/books/${item.bookSlug}`} className="drawer-row-title" onClick={closePanel}>
                     {item.title}

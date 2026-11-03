@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { t } from '../i18n/t.js'
 import './Logo.css'
 
 export function LogoMark({ className }) {
@@ -15,7 +16,7 @@ export function LogoMark({ className }) {
 
 export default function Logo() {
   return (
-    <Link to="/" className="logo" aria-label="Bookora home">
+    <Link to="/" className="logo" aria-label={t('nav.logo')}>
       <LogoMark className="logo-mark" />
       <span className="logo-word">Bookora</span>
     </Link>

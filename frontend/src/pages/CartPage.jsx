@@ -41,7 +41,7 @@ export default function CartPage() {
           {cart.items.map((item) => (
             <li key={item.productId} className="cart-item">
               <Link to={`/books/${item.bookSlug}`} className="cart-cover" aria-hidden="true" tabIndex={-1}>
-                <Cover book={{ id: item.bookId, title: item.title, authors: item.authors, coverImagePath: item.coverImagePath }} />
+                <Cover book={{ ...item, id: item.bookId }} />
               </Link>
 
               <div className="cart-info">

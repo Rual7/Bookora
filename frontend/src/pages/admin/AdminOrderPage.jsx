@@ -2,10 +2,11 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import AddressText from '../../components/AddressText.jsx'
 import OrderStatus from '../../components/OrderStatus.jsx'
+import OrderTable from '../../components/OrderTable.jsx'
 import { api } from '../../api/client.js'
 import { t } from '../../i18n/t.js'
 import { useFetch } from '../../hooks/useFetch.js'
-import { formatDate, formatPrice } from '../../utils/format.js'
+import { formatDate } from '../../utils/format.js'
 import './Admin.css'
 
 export default function AdminOrderPage() {
@@ -18,7 +19,6 @@ export default function AdminOrderPage() {
   if (loading || !data) return <p className="muted">{t('admin.loading')}</p>
 
   const { order } = data
-  const price = (amount) => formatPrice(amount, order.currency)
   const next = nextStep(order)
 
   async function moveTo(status) {
@@ -47,41 +47,7 @@ export default function AdminOrderPage() {
       </p>
       <p className="admin-notice">{t('admin.customer')}: {data.customerName} ({data.customerEmail})</p>
 
-      <div className="table-wrap">
-        <table className="data-table">
-          <caption className="visually-hidden">{t('order.caption', { number: order.orderNumber })}</caption>
-          <thead>
-            <tr>
-              <th scope="col">{t('order.book')}</th>
-              <th scope="col">{t('order.format')}</th>
-              <th scope="col" className="num">{t('order.price')}</th>
-              <th scope="col" className="num">{t('order.qty')}</th>
-              <th scope="col" className="num">{t('orders.total')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {order.items.map((item) => (
-              <tr key={item.id}>
-                <th scope="row">{item.title}</th>
-                <td data-label={t('order.format')}>{t(`format.${item.format}`)}</td>
-                <td className="num" data-label={t('order.price')}>{price(item.unitPrice)}</td>
-                <td className="num" data-label={t('order.qty')}>{item.quantity}</td>
-                <td className="num" data-label={t('orders.total')}>{price(item.lineTotal)}</td>
-              </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr>
-              <th scope="row" colSpan={4}>{t('cart.delivery')}</th>
-              <td className="num">{Number(order.shippingCost) === 0 ? t('shipping.free') : price(order.shippingCost)}</td>
-            </tr>
-            <tr>
-              <th scope="row" colSpan={4}>{t('orders.total')}</th>
-              <td className="num"><strong>{price(order.total)}</strong></td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
+      <OrderTable order={order} />
 
       <div className="order-bottom">
         <section className="order-delivery" aria-labelledby="delivery-title">

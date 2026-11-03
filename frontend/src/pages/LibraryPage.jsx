@@ -44,7 +44,7 @@ export default function LibraryPage() {
         {items?.map((item) => (
           <li key={item.orderItemId} className="library-item">
             <Link to={`/books/${item.bookSlug}`} className="library-cover" aria-hidden="true" tabIndex={-1}>
-              <Cover book={{ id: item.orderItemId, title: item.title, authors: item.authors, coverImagePath: item.coverImagePath }} />
+              <Cover book={{ ...item, id: item.orderItemId }} />
             </Link>
             <div className="library-info">
               <Link to={`/books/${item.bookSlug}`} className="library-title">{item.title}</Link>

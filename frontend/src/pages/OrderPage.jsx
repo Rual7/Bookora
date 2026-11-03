@@ -4,18 +4,18 @@ import { Download, PackageX } from 'lucide-react'
 import AddressText from '../components/AddressText.jsx'
 import StatusPage from '../components/StatusPage.jsx'
 import OrderStatus from '../components/OrderStatus.jsx'
+import OrderTable from '../components/OrderTable.jsx'
 import { t } from '../i18n/t.js'
 import { usePageMeta } from '../hooks/usePageMeta.js'
 import { useOrder } from '../hooks/useOrder.js'
 import { usePayment } from '../hooks/usePayment.js'
 import { downloadFile } from '../api/client.js'
-import { formatDate, formatPrice, isDigital } from '../utils/format.js'
+import { formatDate, isDigital } from '../utils/format.js'
 import './OrderPage.css'
 
 const CONFIRM_EVERY_MS = 2000
 const GIVE_UP_AFTER_MS = 40000
 
-// Old orders keep the currency they were placed in, so prices are shown with order.currency.
 export default function OrderPage() {
   const { orderNumber } = useParams()
   usePageMeta({ title: t('order.title', { number: orderNumber }), noindex: true })
@@ -59,7 +59,6 @@ export default function OrderPage() {
   }
   if (!order) return null
 
-  const price = (amount) => formatPrice(amount, order.currency)
   const unpaid = order.status === 'PENDING_PAYMENT'
   const paid = ['PAID', 'SHIPPED', 'DELIVERED'].includes(order.status)
   const notice = describeNotice()
@@ -100,49 +99,12 @@ export default function OrderPage() {
 
       {downloadProblem && <p className="form-error" role="alert">{t('order.downloadProblem', { message: downloadProblem })}</p>}
 
-      <div className="table-wrap">
-        <table className="data-table">
-          <caption className="visually-hidden">{t('order.caption', { number: order.orderNumber })}</caption>
-          <thead>
-            <tr>
-              <th scope="col">{t('order.book')}</th>
-              <th scope="col">{t('order.format')}</th>
-              <th scope="col" className="num">{t('order.price')}</th>
-              <th scope="col" className="num">{t('order.qty')}</th>
-              <th scope="col" className="num">{t('orders.total')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {order.items.map((item) => (
-              <tr key={`${item.title}-${item.format}`}>
-                <th scope="row">
-                  {item.title}
-                  {paid && isDigital(item.format) && (
-                    <button type="button" className="link-btn order-download" onClick={() => download(item)}
-                      aria-label={t('order.downloadLabel', { title: item.title })}>
-                      <Download size={16} strokeWidth={1.5} aria-hidden="true" /> {t('order.download')}
-                    </button>
-                  )}
-                </th>
-                <td data-label={t('order.format')}>{t(`format.${item.format}`)}</td>
-                <td className="num" data-label={t('order.price')}>{price(item.unitPrice)}</td>
-                <td className="num" data-label={t('order.qty')}>{item.quantity}</td>
-                <td className="num" data-label={t('orders.total')}>{price(item.lineTotal)}</td>
-              </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr>
-              <th scope="row" colSpan={4}>{t('cart.delivery')}</th>
-              <td className="num">{Number(order.shippingCost) === 0 ? t('shipping.free') : price(order.shippingCost)}</td>
-            </tr>
-            <tr>
-              <th scope="row" colSpan={4}>{t('orders.total')}</th>
-              <td className="num"><strong>{price(order.total)}</strong></td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
+      <OrderTable order={order} renderAction={(item) => paid && isDigital(item.format) && (
+        <button type="button" className="link-btn order-download" onClick={() => download(item)}
+          aria-label={t('order.downloadLabel', { title: item.title })}>
+          <Download size={16} strokeWidth={1.5} aria-hidden="true" /> {t('order.download')}
+        </button>
+      )} />
 
       <div className="order-bottom">
         <section className="order-delivery" aria-labelledby="delivery-title">

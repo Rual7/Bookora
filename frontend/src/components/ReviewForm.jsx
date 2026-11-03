@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import FormField from './FormField.jsx'
 import StarInput from './StarInput.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
-import { api } from '../api/client.js'
+import { api, formErrors } from '../api/client.js'
 import { t } from '../i18n/t.js'
 import './ReviewForm.css'
 
@@ -43,9 +43,9 @@ export default function ReviewForm({ slug }) {
       await api.post(`/api/books/${encodeURIComponent(slug)}/reviews`, form)
       setSent(true)
     } catch (problem) {
-      const fields = problem.fieldErrors ?? {}
+      const { fields, message } = formErrors(problem)
       setFieldErrors(fields)
-      setError(Object.keys(fields).length > 0 ? '' : problem.message)
+      setError(message)
     } finally {
       setBusy(false)
     }

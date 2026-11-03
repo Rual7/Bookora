@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { api } from '../api/client.js'
+import { api, formErrors } from '../api/client.js'
 import Captcha from '../components/Captcha.jsx'
 import FormField from '../components/FormField.jsx'
 import { LogoMark } from '../components/Logo.jsx'
@@ -68,9 +68,9 @@ function ContactForm() {
       setForm(EMPTY_FORM)
       setSent(true)
     } catch (problem) {
-      const fields = problem.fieldErrors ?? {}
+      const { fields, message } = formErrors(problem)
       setFieldErrors(fields)
-      setError(Object.keys(fields).length > 0 ? '' : problem.message)
+      setError(message)
     } finally {
       setCaptchaRound(captchaRound + 1)
       setBusy(false)

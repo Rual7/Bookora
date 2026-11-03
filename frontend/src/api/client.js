@@ -8,6 +8,15 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Splits a refused form into the messages shown under each field and one general message.
+ * When the server names the fields, the general message would only repeat them, so it is left empty.
+ */
+export function formErrors(problem) {
+  const fields = problem.fieldErrors ?? {}
+  return { fields, message: Object.keys(fields).length > 0 ? '' : problem.message }
+}
+
 function readCookie(name) {
   const match = document.cookie.split('; ').find((row) => row.startsWith(`${name}=`))
   return match ? decodeURIComponent(match.split('=')[1]) : null

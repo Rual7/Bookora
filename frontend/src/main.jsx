@@ -18,17 +18,17 @@ import { PanelProvider } from './context/PanelContext.jsx'
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>
-    <BrowserRouter>
-      <AuthProvider>
-        <CartProvider>
-          <WishlistProvider>
-            <PanelProvider>
-              <App />
-            </PanelProvider>
-          </WishlistProvider>
-        </CartProvider>
-      </AuthProvider>
-    </BrowserRouter>
+      <BrowserRouter>
+        <AuthProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <PanelProvider>
+                <App />
+              </PanelProvider>
+            </WishlistProvider>
+          </CartProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </ErrorBoundary>
   </StrictMode>,
 )
