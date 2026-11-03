@@ -2,7 +2,7 @@
 
 An online bookstore for **printed books** and **e-books**, built as a single-page application: a **Java Spring Boot** REST backend, a **PostgreSQL** database and a **React** frontend.
 
-> **Status:** in development. The architecture and database are designed; the application is being implemented.
+> **Status:** feature complete and tested; online deployment is the last step.
 
 ## Contents
 
@@ -31,20 +31,23 @@ A **book** is one catalog entry with its title, description, authors, categories
 **Customer**
 
 - Register, sign in and sign out
-- Browse the catalog with search, filters (category, author, format) and pagination
-- Book page with formats, authors, categories and reviews
-- Shopping cart and wishlist
+- Browse the catalog with search by title or author, filters (category, format), sorting and scroll loading
+- Book page with formats, pictures, authors, categories and reviews
+- Shopping cart and wishlist, also for visitors (moved into the account at sign-in)
 - Saved delivery addresses
 - Checkout with online payment and order history
-- Download purchased e-books
-- Rate and review books (moderated)
+- E-book library: download purchased e-books, read PDFs in the browser
+- Rate and review books (moderated, with a "Verified purchase" mark)
+- Contact form
+- Light and dark theme, responsive layout, keyboard and screen-reader friendly
 
 **Administrator**
 
-- Manage books, formats, categories and authors
+- Manage books, formats, authors, categories and up to eight pictures per book
 - Upload the e-book file of a digital format
 - Moderate reviews
-- View orders and update their status
+- View orders and move them to shipped and delivered
+- Read contact messages and turn customer accounts on or off
 
 **Interface**
 
@@ -86,13 +89,13 @@ The backend is layered: **controller** (HTTP), **service** (business logic, defi
 
 ## Database
 
-PostgreSQL, **19 tables**, in **third normal form (3NF)**. Details, diagram and rules are in [`docs/database`](docs/database/README.md); the schema itself is [`V1__init.sql`](docs/database/V1__init.sql).
+PostgreSQL, **21 tables**, in **third normal form (3NF)**. Details, diagram and rules are in [`docs/database`](docs/database/README.md); the schema itself is [`V1__init.sql`](backend/src/main/resources/db/migration/V1__init.sql) and the later migrations next to it.
 
-| Area                | Tables                                                                                |
-| ------------------- | ------------------------------------------------------------------------------------- |
-| Users               | `app_user`, `address`                                                                 |
-| Catalog             | `book`, `product`, `author`, `book_author`, `category`, `book_category`, `ebook_file` |
-| Customer            | `review`, `wishlist_item`, `cart`, `cart_item`                                        |
+| Area                | Tables                                                                                              |
+| ------------------- | --------------------------------------------------------------------------------------------------- |
+| Users               | `app_user`, `address`                                                                               |
+| Catalog             | `book`, `book_image`, `product`, `author`, `book_author`, `category`, `book_category`, `ebook_file` |
+| Customer            | `review`, `wishlist_item`, `cart`, `cart_item`, `contact_message`                                   |
 | Orders and payments | `customer_order`, `order_address`, `order_item`, `payment`, `ebook_download`          |
 | Infrastructure      | `processed_webhook_event`                                                             |
 
@@ -125,15 +128,15 @@ Main design choices:
 | Uploads          | 12 MB limit, extension allow-list, real file type verification                                        |
 | Steganography    | Uploaded images are re-encoded on the server; other files get a scan status before they are published |
 | Rate limiting    | More than 100 requests per minute from one address are blocked temporarily (`429`)                    |
-| CAPTCHA          | Cloudflare Turnstile on registration and sign-in                                                      |
+| CAPTCHA          | Cloudflare Turnstile on registration, sign-in and the contact form                                    |
 | Security headers | Set in Apache, target grade A                                                                         |
 | `.htaccess`      | Blocks sensitive files and directory listing                                                          |
 | Payments         | Stripe webhook signature verification                                                                 |
 
 ## Quality and delivery
 
-- **Unit tests** with JUnit 5 and Mockito for the service layer
-- **Git** with a stable `main` branch and feature branches
+- **Tests**: JUnit 5 and Mockito unit tests for the services, and MockMvc integration tests for the API on a real PostgreSQL database
+- **Git** with themed commits on `main`
 - **GitHub Actions** builds and tests the project on every push and pull request
 - **Logging** of user actions and security events to a rotating log file
 - **SEO**: page titles and descriptions, `robots.txt`, image alt text, Lighthouse SEO score of 90 or more
@@ -181,6 +184,16 @@ Without Stripe keys the shop works, but "Pay now" answers that online payment is
 3. Restart the backend, place an order and pay with the test card `4242 4242 4242 4242` (any future date, any CVC). The order turns to **Paid** when the webhook arrives.
 
 An unpaid order keeps its books reserved until its payment page expires (30 minutes); then it is cancelled and the stock comes back. A background job also cancels unpaid orders older than an hour that never opened a payment page.
+
+### Demo data
+
+The Flyway migrations fill the shop with demo content, so every feature can be tried right away:
+
+- **44 public-domain books** (43 on sale, one hidden) in paperback, hardcover, EPUB and PDF. Books without a picture show the typographic cover the website draws; an administrator can upload real covers. Some paperbacks are low on stock and one book is sold out.
+- **Small demo e-books** in `backend/src/main/resources/demo/ebooks`. When the backend starts it attaches them to the e-book formats that have no file yet, through the same checks as an upload. Set `DEMO_EBOOKS=false` to turn this off.
+- **12 demo customers** with addresses, 30 orders in every status (paid, shipped, delivered, cancelled), Stripe payments, e-book downloads, 46 reviews (approved, waiting and rejected), wishlists, two filled carts and contact messages. One account is disabled.
+
+Every demo customer signs in with an `@example.com` address from `V10__demo_customers.sql` (for example `ana.popescu@example.com`) and the password `BookoraDemo2026`. The disabled account (`paul.neagu@example.com`) cannot sign in. These accounts are public, so remove them before using the shop for real customers.
 
 ### Administration
 
