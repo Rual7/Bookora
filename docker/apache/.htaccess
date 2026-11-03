@@ -19,6 +19,13 @@ Header always set Content-Security-Policy "default-src 'self'; img-src 'self' da
     Header set Cache-Control "public, max-age=31536000, immutable"
 </If>
 
+# The page shell (index.html) and the other plain files are checked with the server on every visit.
+# Without this a browser may reuse an old index.html for a while and keep showing the previous version of the site
+# until a manual refresh. This costs one small "not modified" answer.
+<If "%{REQUEST_URI} !~ m#^/(assets|api)/#">
+    Header set Cache-Control "no-cache"
+</If>
+
 # Single-page app routing: everything that is not a file or /api goes to index.html
 RewriteEngine On
 RewriteCond %{REQUEST_URI} !^/(api/|sitemap\.xml|robots\.txt)
