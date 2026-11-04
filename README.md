@@ -140,7 +140,7 @@ Main design choices:
 - **GitHub Actions** builds and tests the project on every push and pull request
 - **Logging** of user actions and security events to a rotating log file
 - **SEO**: page titles and descriptions, `robots.txt`, image alt text, Lighthouse SEO score of 90 or more
-- **Hosting**: online deployment on a provider that supports Docker, PostgreSQL and HTTPS (to be chosen)
+- **Hosting**: deployed on Render with Docker and PostgreSQL, set up by [`render.yaml`](render.yaml); steps in [`docs/deploy-render.md`](docs/deploy-render.md)
 
 ## Project structure
 

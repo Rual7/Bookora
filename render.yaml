@@ -1,0 +1,76 @@
+# Render Blueprint: PostgreSQL + Spring Boot backend + Apache (React build) from this repository.
+# How to use it: docs/deploy-render.md
+#
+# Plans are "free" so the demo costs nothing. Free means: services sleep after 15 minutes without visits (the first
+# visit then takes about a minute), the free database is deleted after 30 days, and uploaded files (covers, e-books) are
+# lost when the backend restarts. Change `plan` and add the disk below to keep them.
+
+databases:
+  - name: bookora-db
+    databaseName: bookora
+    plan: free
+
+services:
+  - type: web
+    name: bookora-backend
+    runtime: docker
+    dockerfilePath: ./docker/backend.Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /api/categories
+    # Paid plans only: keeps uploaded covers and e-books between restarts.
+    # disk:
+    #   name: bookora-files
+    #   mountPath: /app/storage
+    #   sizeGB: 1
+    envVars:
+      - key: DB_HOST
+        fromDatabase: { name: bookora-db, property: host }
+      - key: DB_PORT
+        fromDatabase: { name: bookora-db, property: port }
+      - key: DB_NAME
+        fromDatabase: { name: bookora-db, property: database }
+      - key: DB_USER
+        fromDatabase: { name: bookora-db, property: user }
+      - key: DB_PASSWORD
+        fromDatabase: { name: bookora-db, property: password }
+      # The public address of the shop, used for payment redirects and the sitemap. Fill it in after the first deploy.
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: EBOOK_STORAGE_PATH
+        value: /app/storage/ebooks
+      - key: COVER_STORAGE_PATH
+        value: /app/storage/covers
+      # A small JVM for the 512 MB of the free plan
+      - key: JAVA_TOOL_OPTIONS
+        value: -XX:MaxRAMPercentage=70 -XX:+UseSerialGC
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: TURNSTILE_SECRET
+        sync: false
+
+  - type: web
+    name: bookora-web
+    runtime: docker
+    dockerfilePath: ./docker/web.Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /
+    envVars:
+      # Apache sends /api to the backend over Render's private network
+      - key: BACKEND_HOST
+        fromService: { type: web, name: bookora-backend, property: hostport }
+      # Render's load balancer sets the visitor's address in X-Forwarded-For, so Apache keeps it
+      - key: TRUST_PROXY
+        value: "true"
+      # Public CAPTCHA key, baked into the page when it is built
+      - key: VITE_TURNSTILE_SITE_KEY
+        sync: false
